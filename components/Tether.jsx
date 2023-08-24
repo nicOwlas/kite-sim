@@ -3,7 +3,7 @@ import { useFrame } from "@react-three/fiber";
 import { useRef } from "react";
 import * as THREE from "three";
 
-function Tether({
+export default function Tether({
   start,
   end,
   v1 = new THREE.Vector3(),
@@ -28,4 +28,4 @@ function Tether({
   );
 }
 
-export default Tether;
+// export default Tether;

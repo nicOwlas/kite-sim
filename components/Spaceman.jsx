@@ -24,4 +24,7 @@ const Spaceman = forwardRef(({ children, ...props }, ref) => {
     </mesh>
   );
 });
+
+Spaceman.displayName = "Spaceman";
+
 export default Spaceman;
