@@ -1,7 +1,6 @@
 "use client";
 import Boat from "@/components/Boat";
 import Spaceman from "@/components/Spaceman";
-import Tether from "@/components/Tether";
 import { Float, OrbitControls, Sky, Stats } from "@react-three/drei";
 import {
   Canvas,
@@ -56,23 +55,24 @@ export default function Home() {
         position: [-30, 20, 0],
       }}
     >
+      <ambientLight />
       <pointLight position={[100, 100, 100]} />
       <pointLight position={[-100, -100, -100]} />
       <Suspense fallback={null}>
         <Ocean />
       </Suspense>
       <Sky scale={1000} sunPosition={[500, 150, -200]} turbidity={0.1} />
-      <Boat ref={boat} />
+      <Boat ref={boat} position={[0, -10, 0]} scale={5} />
       <Float rotationIntensity={0.4} floatIntensity={20} speed={1.5}>
         <Spaceman
-          position={[60, 15, -20]}
+          position={[60, 50, -20]}
           scale={3}
           rotation={[0, -Math.PI / 2, 0]}
         >
           <object3D ref={spaceman} />
         </Spaceman>
       </Float>
-      <Tether start={boat} end={spaceman} />
+      {/* <Tether start={boat} end={spaceman} /> */}
       <OrbitControls makeDefault />
       <Stats />
     </Canvas>
