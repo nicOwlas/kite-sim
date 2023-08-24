@@ -1,7 +1,7 @@
 "use client";
 import Boat from "@/components/Boat";
-import { OrbitControls, Sky } from "@react-three/drei";
-import { Canvas } from "@react-three/fiber";
+import Spaceman from "@/components/Spaceman";
+import Tether from "@/components/Tether";
 export default function Home() {
   return (
     <Canvas
@@ -9,7 +9,7 @@ export default function Home() {
         fov: 75,
         near: 0.1,
         far: 1000,
-        position: [-50, 0, -50],
+        position: [-50, 0, -100],
         up: [0, 0, -1],
       }}
     >
@@ -20,18 +20,16 @@ export default function Home() {
         material-uniforms-up-value={[0, 0, -1]}
       />
       <ambientLight intensity={1} />
-      <directionalLight
-        color="red"
-        position={[5, 5, 5]}
-        attach="sphereGeometry"
-      />
-      <Boat />
+      <Boat ref={boat} />
+      <Float rotationIntensity={0.4} floatIntensity={20} speed={1.5}>
+        <Spaceman position={[10, 0, -15]} scale={3} rotation={[-1.6, -1.6, 0]}>
+          <object3D ref={spaceman} />
+        </Spaceman>
+      </Float>
+      <Tether start={boat} end={spaceman} />
       {/* <Cylinder3d /> */}
       {/* <SampleComponent /> */}
-      <OrbitControls
-        minPolarAngle={Math.PI / 2.5}
-        maxPolarAngle={Math.PI / 2.5}
-      />
+      <OrbitControls makeDefault />
     </Canvas>
   );
 }
