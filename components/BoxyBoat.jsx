@@ -1,5 +1,5 @@
 import { forwardRef } from "react";
-const Boat = forwardRef(({ children, ...props }, ref) => {
+const BoxyBoat = forwardRef(({ children, ...props }, ref) => {
   return (
     <mesh position={[0, 0, 0]} ref={ref}>
       <meshNormalMaterial wireframe={true} />
@@ -9,6 +9,6 @@ const Boat = forwardRef(({ children, ...props }, ref) => {
   );
 });
 
-Boat.displayName = "Boat";
+BoxyBoat.displayName = "BoxyBoat";
 
-export default Boat;
+export default BoxyBoat;
