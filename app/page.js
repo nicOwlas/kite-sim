@@ -10,6 +10,7 @@ import {
   useLoader,
   useThree,
 } from "@react-three/fiber";
+import { useControls } from "leva";
 import { Suspense, useMemo, useRef } from "react";
 import { PlaneGeometry, RepeatWrapping, TextureLoader, Vector3 } from "three";
 import { Water } from "three-stdlib";
@@ -47,6 +48,13 @@ function Ocean() {
 export default function Home() {
   const spaceman = useRef();
   const boat = useRef();
+  const parameters = useControls({
+    cableLength_m: { value: 100, min: 0, max: 400, step: 10 },
+    boatSpeed_kt: { value: 10, min: 0, max: 50, step: 1 },
+    windSpeed_kt: { value: 10, min: 0, max: 50, step: 1 },
+    windOrientation_deg: { value: 0, min: 0, max: 360, step: 1 },
+  });
+
   return (
     <Canvas
       camera={{
@@ -68,7 +76,7 @@ export default function Home() {
       <Float rotationIntensity={0.4} floatIntensity={20} speed={1.5}>
         <Spaceman
           position={new Vector3().setFromSphericalCoords(
-            100,
+            parameters.cableLength_m,
             Math.PI / 4,
             Math.PI / 4
           )}
