@@ -27,5 +27,3 @@ export default function Tether({
     />
   );
 }
-
-// export default Tether;
