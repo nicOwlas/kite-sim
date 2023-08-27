@@ -8,15 +8,30 @@ import { Canvas } from "@react-three/fiber";
 import { useControls } from "leva";
 import { Suspense, useRef } from "react";
 import { Vector3 } from "three";
+import { degToRad } from "three/src/math/MathUtils";
+
+//TODO
+//Wind gradient
+//Display the flight envelop?
 
 export default function Home() {
   const spaceman = useRef();
   const boat = useRef();
-  const parameters = useControls({
-    cableLength_m: { value: 100, min: 0, max: 400, step: 10 },
-    boatSpeed_kt: { value: 10, min: 0, max: 50, step: 1 },
-    windSpeed_kt: { value: 10, min: 0, max: 50, step: 1 },
-    windOrientation_deg: { value: 0, min: 0, max: 360, step: 1 },
+
+  const kiteParameters = useControls("Kite", {
+    length_m: { value: 100, min: 0, max: 400, step: 10 },
+    surface_m2: { value: 10, min: 8, max: 1600, step: 1 },
+    liftToDrag: { value: 6, min: 4, max: 10, step: 1 },
+    azimuth_deg: { value: 0, min: -180, max: 180, step: 1 },
+  });
+
+  const boatParameters = useControls("Boat", {
+    speed_kt: { value: 10, min: 0, max: 50, step: 1 },
+  });
+
+  const windParameters = useControls("Wind", {
+    speed_kt: { value: 10, min: 0, max: 50, step: 1 },
+    orientation_deg: { value: 0, min: -180, max: 180, step: 1 },
   });
 
   return (
@@ -29,7 +44,7 @@ export default function Home() {
       }}
     >
       <ambientLight />
-      <pointLight position={[100, 100, 100]} />
+      <pointLight position={[100, 100, 100]} intensity={10} />
       <pointLight position={[-100, -100, -100]} />
       <Suspense fallback={null}>
         <Ocean />
@@ -40,9 +55,9 @@ export default function Home() {
       <Float rotationIntensity={0.4} floatIntensity={20} speed={1.5}>
         <Spaceman
           position={new Vector3().setFromSphericalCoords(
-            parameters.cableLength_m,
+            kiteParameters.length_m,
             Math.PI / 4,
-            Math.PI / 4
+            degToRad(-kiteParameters.azimuth_deg + 90)
           )}
           scale={3}
           rotation={[0, -Math.PI / 2, 0]}
