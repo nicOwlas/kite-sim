@@ -1,6 +1,6 @@
 "use client";
 import BoxyBoat from "@/components/BoxyBoat";
-import Ocean from "@/components/Ocean";
+import FlightEnvelope from "@/components/FlightEnvelope";
 import Spaceman from "@/components/Spaceman";
 import Tether from "@/components/Tether";
 import { Float, OrbitControls, Sky, Stats } from "@react-three/drei";
@@ -13,6 +13,7 @@ import { degToRad } from "three/src/math/MathUtils";
 //TODO
 //Wind gradient
 //Display the flight envelop?
+//Optimal elevation is around 15deg
 
 export default function Home() {
   const spaceman = useRef();
@@ -46,9 +47,9 @@ export default function Home() {
       <ambientLight />
       <pointLight position={[100, 100, 100]} intensity={10} />
       <pointLight position={[-100, -100, -100]} />
-      <Suspense fallback={null}>
-        <Ocean />
-      </Suspense>
+      <Suspense fallback={null}>{/* <Ocean /> */}</Suspense>
+      <gridHelper args={[1000, 100]} />
+      <FlightEnvelope kiteParameters={kiteParameters} />
       <Sky scale={1000} sunPosition={[500, 150, -200]} turbidity={0.1} />
       <BoxyBoat ref={boat} />
       {/* <Boat ref={boat} position={[0, -10, 0]} scale={5} /> */}
