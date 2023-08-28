@@ -46,10 +46,17 @@ export default function Home() {
     >
       <ambientLight />
       <pointLight position={[100, 100, 100]} intensity={10} />
-      <pointLight position={[-100, -100, -100]} />
+      <pointLight position={[-100, -100, -100]} intensity={10} />
       <Suspense fallback={null}>{/* <Ocean /> */}</Suspense>
       <gridHelper args={[1000, 100]} />
-      <FlightEnvelope kiteParameters={kiteParameters} />
+      <FlightEnvelope
+        kiteParameters={kiteParameters}
+        parameters={{ color: "#0000ff", wireframe: true }}
+      />
+      <FlightEnvelope
+        kiteParameters={kiteParameters}
+        parameters={{ color: "#ffddee", wireframe: false }}
+      />
       <Sky scale={1000} sunPosition={[500, 150, -200]} turbidity={0.1} />
       <BoxyBoat ref={boat} />
       {/* <Boat ref={boat} position={[0, -10, 0]} scale={5} /> */}

@@ -1,4 +1,4 @@
-import { Wireframe } from "@react-three/drei";
+// import { Wireframe } from "@react-three/drei";
 import { useRef } from "react";
 import { degToRad } from "three/src/math/MathUtils";
 function FlightEnvelope(props) {
@@ -17,17 +17,13 @@ function FlightEnvelope(props) {
           Math.PI / 2,
         ]}
       />
+
       <meshBasicMaterial
-        color="#ffddee"
+        color={props.parameters.color}
         transparent="true"
         opacity={0.8}
         side={2}
-      />
-      <Wireframe
-        ref={refWireFrame}
-        stroke="#000000"
-        colorBackfaces={true}
-        backfaceStroke="#000000"
+        wireframe={props.parameters.wireframe}
       />
     </mesh>
   );
