@@ -2,6 +2,7 @@
 import BoxyBoat from "@/components/BoxyBoat";
 import FlightEnvelope from "@/components/FlightEnvelope";
 import Spaceman from "@/components/Spaceman";
+import Tether from "@/components/Tether";
 import { Float, OrbitControls, Sky, Stats } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { useControls } from "leva";
@@ -34,10 +35,13 @@ export default function Home() {
     orientation_deg: { value: 0, min: -180, max: 180, step: 1 },
   });
 
-  const [kitePosition, setKitePosition] = useState({
+  const [kiteAttitude, setKiteAttitude] = useState({
     radius: kiteParameters.length_m,
     azimuth: degToRad(kiteParameters.azimuth_deg),
     elevation: Math.PI / 6,
+    roll: 0,
+    pitch: 0,
+    yaw: degToRad(kiteParameters.azimuth_deg),
   });
 
   function moveKite(position) {
@@ -55,20 +59,24 @@ export default function Home() {
       );
 
       // Transform because THREE and World axis are not aligned
-      setKitePosition({
+      setKiteAttitude({
         radius: intersectionSphericalCoordinates.radius,
         azimuth: Math.PI / 2 - intersectionSphericalCoordinates.theta,
         elevation: Math.PI / 2 - intersectionSphericalCoordinates.phi,
+        roll: 0,
+        pitch: 0,
+        yaw: degToRad(kiteParameters.azimuth_deg),
       });
 
-      console.log("KitePosition:", kitePosition);
+      console.log("KitePosition:", kiteAttitude);
     }
   }
 
+  function relativeWindDirection() {}
   return (
     <Canvas
       camera={{
-        fov: 75,
+        fov: 60,
         near: 0.1,
         far: 3000,
         position: [-30, 20, 0],
@@ -102,15 +110,15 @@ export default function Home() {
       {/* <Boat ref={boat} position={[0, -10, 0]} scale={5} /> */}
       <Float rotationIntensity={0.4} floatIntensity={20} speed={1.5}>
         <Spaceman
-          kitePosition={kitePosition}
+          kiteAttitude={kiteAttitude}
           onMove={moveKite}
           scale={3}
-          rotation={[0, -Math.PI / 2, 0]}
+          rotation={[0, -Math.PI / 2 - degToRad(kiteParameters.azimuth_deg), 0]}
         >
           <object3D ref={spaceman} />
         </Spaceman>
       </Float>
-      {/* <Tether start={boat} end={spaceman} /> */}
+      <Tether start={boat} end={spaceman} />
       <OrbitControls makeDefault />
       <Stats />
     </Canvas>
