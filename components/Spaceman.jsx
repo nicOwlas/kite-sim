@@ -1,5 +1,8 @@
 import { useGLTF } from "@react-three/drei";
 import { forwardRef, useLayoutEffect } from "react";
+import { Vector3 } from "three";
+import { degToRad } from "three/src/math/MathUtils";
+
 const Spaceman = forwardRef(({ children, ...props }, ref) => {
   const { nodes, materials } = useGLTF("/Astronaut-transformed.glb");
   useLayoutEffect(() => {
@@ -7,11 +10,19 @@ const Spaceman = forwardRef(({ children, ...props }, ref) => {
       material.roughness = 0;
     });
   }, []);
+  const position = new Vector3().setFromSphericalCoords(
+    props.kitePosition.radius,
+    props.kitePosition.elevation,
+    degToRad(-props.kitePosition.azimuth + 90)
+  );
+  // props.position
+
   return (
     <mesh
       castShadow
       receiveShadow
       ref={ref}
+      position={position}
       {...props}
       geometry={nodes.Astronaut_mesh.geometry}
       material={materials.Astronaut_mat}

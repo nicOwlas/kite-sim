@@ -7,7 +7,6 @@ import { Float, OrbitControls, Sky, Stats } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { useControls } from "leva";
 import { Suspense, useRef, useState } from "react";
-import { Vector3 } from "three";
 import { degToRad } from "three/src/math/MathUtils";
 
 //TODO
@@ -78,11 +77,8 @@ export default function Home() {
       {/* <Boat ref={boat} position={[0, -10, 0]} scale={5} /> */}
       <Float rotationIntensity={0.4} floatIntensity={20} speed={1.5}>
         <Spaceman
-          position={new Vector3().setFromSphericalCoords(
-            kitePosition.radius,
-            kitePosition.elevation,
-            degToRad(-kitePosition.azimuth + 90)
-          )}
+          kitePosition={kitePosition}
+          onMove={moveKite}
           scale={3}
           rotation={[0, -Math.PI / 2, 0]}
         >
