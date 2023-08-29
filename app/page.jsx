@@ -2,11 +2,11 @@
 import BoxyBoat from "@/components/BoxyBoat";
 import FlightEnvelope from "@/components/FlightEnvelope";
 import Spaceman from "@/components/Spaceman";
-import Tether from "@/components/Tether";
 import { Float, OrbitControls, Sky, Stats } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { useControls } from "leva";
 import { Suspense, useRef, useState } from "react";
+import { Spherical } from "three";
 import { degToRad } from "three/src/math/MathUtils";
 
 //TODO
@@ -36,11 +36,34 @@ export default function Home() {
 
   const [kitePosition, setKitePosition] = useState({
     radius: kiteParameters.length_m,
-    azimuth: degToRad(-kiteParameters.azimuth_deg + 90),
-    elevation: Math.PI / 4,
+    azimuth: degToRad(kiteParameters.azimuth_deg),
+    elevation: Math.PI / 6,
   });
 
-  function handleClick(event) {}
+  function moveKite(position) {
+    console.log("Page here: recorded a click at this position", position);
+  }
+
+  function handleClickedEnvelope(event, envelopeName) {
+    if (envelopeName === "filledEnvelope") {
+      console.log("handleClickedEnvelope", event.intersections[0].point);
+      console.log("handleClickedEnvelope", event.eventObject);
+      const intersectionCartesianCoordinates =
+        event.intersections.length > 0 ? event.intersections[0] : null;
+      const intersectionSphericalCoordinates = new Spherical().setFromVector3(
+        intersectionCartesianCoordinates.point
+      );
+
+      // Transform because THREE and World axis are not aligned
+      setKitePosition({
+        radius: intersectionSphericalCoordinates.radius,
+        azimuth: Math.PI / 2 - intersectionSphericalCoordinates.theta,
+        elevation: Math.PI / 2 - intersectionSphericalCoordinates.phi,
+      });
+
+      console.log("KitePosition:", kitePosition);
+    }
+  }
 
   return (
     <Canvas
@@ -61,8 +84,9 @@ export default function Home() {
         parameters={{
           color: "#0000ff",
           wireframe: true,
-          name: "wireframeEnvelope",
+          name: "wiredEnvelope",
         }}
+        onMouseClick={handleClickedEnvelope}
       />
       <FlightEnvelope
         kiteParameters={kiteParameters}
@@ -71,6 +95,7 @@ export default function Home() {
           wireframe: false,
           name: "filledEnvelope",
         }}
+        onMouseClick={handleClickedEnvelope}
       />
       <Sky scale={1000} sunPosition={[500, 150, -200]} turbidity={0.1} />
       <BoxyBoat ref={boat} />
@@ -85,7 +110,7 @@ export default function Home() {
           <object3D ref={spaceman} />
         </Spaceman>
       </Float>
-      <Tether start={boat} end={spaceman} />
+      {/* <Tether start={boat} end={spaceman} /> */}
       <OrbitControls makeDefault />
       <Stats />
     </Canvas>

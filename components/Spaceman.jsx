@@ -1,7 +1,6 @@
 import { useGLTF } from "@react-three/drei";
 import { forwardRef, useLayoutEffect } from "react";
 import { Vector3 } from "three";
-import { degToRad } from "three/src/math/MathUtils";
 
 const Spaceman = forwardRef(({ children, ...props }, ref) => {
   const { nodes, materials } = useGLTF("/Astronaut-transformed.glb");
@@ -12,8 +11,8 @@ const Spaceman = forwardRef(({ children, ...props }, ref) => {
   }, []);
   const position = new Vector3().setFromSphericalCoords(
     props.kitePosition.radius,
-    props.kitePosition.elevation,
-    degToRad(-props.kitePosition.azimuth + 90)
+    Math.PI / 2 - props.kitePosition.elevation,
+    -props.kitePosition.azimuth + Math.PI / 2
   );
   // props.position
 
