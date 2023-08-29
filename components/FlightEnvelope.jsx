@@ -1,11 +1,25 @@
 // import { Wireframe } from "@react-three/drei";
-import { useRef } from "react";
 import { degToRad } from "three/src/math/MathUtils";
-function FlightEnvelope(props) {
-  const refWireFrame = useRef();
 
+function FlightEnvelope(props) {
+  function handleClick(event) {
+    if (props.parameters.name === "filledEnvelope") {
+      console.log("Clicked", event.intersections[0].point);
+      console.log("Clicked", event.eventObject);
+      const intersection =
+        event.intersections.length > 0 ? event.intersections[0] : null;
+
+      // if (intersection !== null) {
+      //   return target;
+      // }
+    }
+  }
   return (
-    <mesh position={[0, 0, 0]}>
+    <mesh
+      position={[0, 0, 0]}
+      onClick={(e) => handleClick(e)}
+      name={props.parameters.name}
+    >
       <sphereGeometry
         args={[
           props.kiteParameters.length_m,

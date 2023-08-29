@@ -6,7 +6,7 @@ import Tether from "@/components/Tether";
 import { Float, OrbitControls, Sky, Stats } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { useControls } from "leva";
-import { Suspense, useRef } from "react";
+import { Suspense, useRef, useState } from "react";
 import { Vector3 } from "three";
 import { degToRad } from "three/src/math/MathUtils";
 
@@ -35,6 +35,14 @@ export default function Home() {
     orientation_deg: { value: 0, min: -180, max: 180, step: 1 },
   });
 
+  const [kitePosition, setKitePosition] = useState({
+    radius: kiteParameters.length_m,
+    azimuth: degToRad(-kiteParameters.azimuth_deg + 90),
+    elevation: Math.PI / 4,
+  });
+
+  function handleClick(event) {}
+
   return (
     <Canvas
       camera={{
@@ -51,11 +59,19 @@ export default function Home() {
       <gridHelper args={[1000, 100]} />
       <FlightEnvelope
         kiteParameters={kiteParameters}
-        parameters={{ color: "#0000ff", wireframe: true }}
+        parameters={{
+          color: "#0000ff",
+          wireframe: true,
+          name: "wireframeEnvelope",
+        }}
       />
       <FlightEnvelope
         kiteParameters={kiteParameters}
-        parameters={{ color: "#ffddee", wireframe: false }}
+        parameters={{
+          color: "#ffddee",
+          wireframe: false,
+          name: "filledEnvelope",
+        }}
       />
       <Sky scale={1000} sunPosition={[500, 150, -200]} turbidity={0.1} />
       <BoxyBoat ref={boat} />
@@ -63,9 +79,9 @@ export default function Home() {
       <Float rotationIntensity={0.4} floatIntensity={20} speed={1.5}>
         <Spaceman
           position={new Vector3().setFromSphericalCoords(
-            kiteParameters.length_m,
-            Math.PI / 4,
-            degToRad(-kiteParameters.azimuth_deg + 90)
+            kitePosition.radius,
+            kitePosition.elevation,
+            degToRad(-kitePosition.azimuth + 90)
           )}
           scale={3}
           rotation={[0, -Math.PI / 2, 0]}
