@@ -12,8 +12,10 @@ function FlightEnvelope(props) {
       <sphereGeometry
         args={[
           props.kiteParameters.length_m,
-          64,
-          32,
+          props.parameters.widthSegments ? props.parameters.widthSegments : 64,
+          props.parameters.heightSegments
+            ? props.parameters.heightSegments
+            : 32,
           degToRad(-props.kiteParameters.azimuth_deg + 90),
           Math.PI,
           0,

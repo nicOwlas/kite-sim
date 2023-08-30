@@ -1,8 +1,7 @@
 "use client";
 import BoxyBoat from "@/components/BoxyBoat";
 import FlightEnvelope from "@/components/FlightEnvelope";
-import Spaceman from "@/components/Spaceman";
-import Tether from "@/components/Tether";
+import Kite from "@/components/Kite";
 import { Float, OrbitControls, Sky, Stats } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { useControls } from "leva";
@@ -17,6 +16,7 @@ import { degToRad } from "three/src/math/MathUtils";
 
 export default function Home() {
   const spaceman = useRef();
+  const kite = useRef();
   const boat = useRef();
 
   const kiteParameters = useControls("Kite", {
@@ -90,16 +90,18 @@ export default function Home() {
       <FlightEnvelope
         kiteParameters={kiteParameters}
         parameters={{
-          color: "#0000ff",
+          color: "#f542e3",
           wireframe: true,
           name: "wiredEnvelope",
+          widthSegments: 32,
+          heightSegments: 16,
         }}
         onMouseClick={handleClickedEnvelope}
       />
       <FlightEnvelope
         kiteParameters={kiteParameters}
         parameters={{
-          color: "#ffddee",
+          color: "#f7bef2",
           wireframe: false,
           name: "filledEnvelope",
         }}
@@ -108,17 +110,23 @@ export default function Home() {
       <Sky scale={1000} sunPosition={[500, 150, -200]} turbidity={0.1} />
       <BoxyBoat ref={boat} />
       {/* <Boat ref={boat} position={[0, -10, 0]} scale={5} /> */}
+
       <Float rotationIntensity={0.4} floatIntensity={20} speed={1.5}>
-        <Spaceman
+        <Kite
           kiteAttitude={kiteAttitude}
-          onMove={moveKite}
+          scale={3}
+          rotation={[0, -Math.PI / 2 - degToRad(kiteParameters.azimuth_deg), 0]}
+          // ref={kite}
+        />
+        {/* <Spaceman
+          kiteAttitude={kiteAttitude}
           scale={3}
           rotation={[0, -Math.PI / 2 - degToRad(kiteParameters.azimuth_deg), 0]}
         >
           <object3D ref={spaceman} />
-        </Spaceman>
+        </Spaceman> */}
       </Float>
-      <Tether start={boat} end={spaceman} />
+      {/* <Tether start={boat} end={kite} /> */}
       <OrbitControls makeDefault />
       <Stats />
     </Canvas>
