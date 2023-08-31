@@ -2,6 +2,7 @@
 import BoxyBoat from "@/components/BoxyBoat";
 import FlightEnvelope from "@/components/FlightEnvelope";
 import Kite from "@/components/Kite";
+import Tether from "@/components/Tether";
 import { Float, OrbitControls, Sky, Stats } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { useControls } from "leva";
@@ -116,17 +117,10 @@ export default function Home() {
           kiteAttitude={kiteAttitude}
           scale={3}
           rotation={[0, -Math.PI / 2 - degToRad(kiteParameters.azimuth_deg), 0]}
-          // ref={kite}
+          ref={kite}
         />
-        {/* <Spaceman
-          kiteAttitude={kiteAttitude}
-          scale={3}
-          rotation={[0, -Math.PI / 2 - degToRad(kiteParameters.azimuth_deg), 0]}
-        >
-          <object3D ref={spaceman} />
-        </Spaceman> */}
       </Float>
-      {/* <Tether start={boat} end={kite} /> */}
+      <Tether start={boat} end={kite} />
       <OrbitControls makeDefault />
       <Stats />
     </Canvas>

@@ -4,31 +4,26 @@ License: https://help.3dexport.com/item/basic-and-extended-license-usage-example
 */
 
 import { useAnimations, useGLTF } from "@react-three/drei";
-import { useLoader } from "@react-three/fiber";
-import { useRef } from "react";
+import { forwardRef } from "react";
 import { Vector3 } from "three";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 
-export default function Kite(props) {
-  const group = useRef();
-  const model = useLoader(GLTFLoader, "/kite.glb");
+const Kite = forwardRef((props, ref) => {
   const { nodes, materials, animations } = useGLTF("/kite.glb");
-  const { actions } = useAnimations(animations, group);
+  const { actions } = useAnimations(animations, ref);
   const position = new Vector3().setFromSphericalCoords(
     props.kiteAttitude.radius,
     Math.PI / 2 - props.kiteAttitude.elevation,
     -props.kiteAttitude.azimuth + Math.PI / 2
   );
-  // const position = new Vector3(0, 0, 0);
 
   return (
-    <group position={position}>
+    <group position={position} rotation={[]} ref={ref}>
       <axesHelper scale={5} />
       <group
-        ref={group}
         {...props}
         dispose={null}
-        position={[3.2 * props.scale, -7.2 * props.scale, 0]}
+        // model is 6.2m tall
+        position={[3.2 * props.scale, -1 * props.scale, 0]}
       >
         <group name="Scene">
           <group
@@ -142,6 +137,10 @@ export default function Kite(props) {
       </group>
     </group>
   );
-}
+});
 
 useGLTF.preload("/kite.glb");
+
+Kite.displayName = "Kite";
+
+export default Kite;

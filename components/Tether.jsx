@@ -8,13 +8,15 @@ export default function Tether({
   end,
   v1 = new THREE.Vector3(),
   v2 = new THREE.Vector3(),
+  v3 = new THREE.Vector3(),
 }) {
   const ref = useRef();
   useFrame(
     () =>
       ref.current.setPoints(
         start.current.getWorldPosition(v1),
-        end.current.getWorldPosition(v2)
+        end.current.getWorldPosition(v2),
+        v3.addVectors(v1, v2)
       ),
     []
   );
