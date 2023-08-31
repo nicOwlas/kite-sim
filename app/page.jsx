@@ -1,8 +1,8 @@
 "use client";
-import BoxyBoat from "@/components/BoxyBoat";
+import Boat from "@/components/Boat";
 import FlightEnvelope from "@/components/FlightEnvelope";
 import Kite from "@/components/Kite";
-import Tether from "@/components/Tether";
+import Ocean from "@/components/Ocean";
 import { Float, OrbitControls, Sky, Stats } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { useControls } from "leva";
@@ -24,11 +24,34 @@ export default function Home() {
     length_m: { value: 100, min: 0, max: 400, step: 10 },
     surface_m2: { value: 10, min: 8, max: 1600, step: 1 },
     liftToDrag: { value: 6, min: 4, max: 10, step: 1 },
-    azimuth_deg: { value: 0, min: -180, max: 180, step: 1 },
+    azimuth_deg: {
+      value: 0,
+      min: -180,
+      max: 180,
+      step: 1,
+      // onChange: (azimuth_deg) => {
+      //   setKiteAttitude((previousValue) => ({
+      //     ...previousValue,
+      //     yaw: degToRad(azimuth_deg),
+      //   }));
+      // },
+    },
   });
+
+  // const [kiteParameters2, set] = useControls(() => ({
+  //   position: {
+  //     value: { x: 0, y: 0 },
+  //     onChange: (position) => {
+  //       if (circleRef.current) {
+  //         circleRef.current.style.transform = `translate(${position.x}px, ${position.y}px)`;
+  //       }
+  //     },
+  //   },
+  // }));
 
   const boatParameters = useControls("Boat", {
     speed_kt: { value: 10, min: 0, max: 50, step: 1 },
+    showOcean: true,
   });
 
   const windParameters = useControls("Wind", {
@@ -45,10 +68,6 @@ export default function Home() {
     yaw: degToRad(kiteParameters.azimuth_deg),
   });
 
-  function moveKite(position) {
-    console.log("Page here: recorded a click at this position", position);
-  }
-
   function handleClickedEnvelope(event, envelopeName) {
     if (envelopeName === "filledEnvelope") {
       console.log("handleClickedEnvelope", event.intersections[0].point);
@@ -64,7 +83,7 @@ export default function Home() {
         radius: intersectionSphericalCoordinates.radius,
         azimuth: Math.PI / 2 - intersectionSphericalCoordinates.theta,
         elevation: Math.PI / 2 - intersectionSphericalCoordinates.phi,
-        roll: 0,
+        roll: degToRad(30),
         pitch: 0,
         yaw: degToRad(kiteParameters.azimuth_deg),
       });
@@ -86,8 +105,13 @@ export default function Home() {
       <ambientLight />
       <pointLight position={[100, 100, 100]} intensity={10} />
       <pointLight position={[-100, -100, -100]} intensity={10} />
-      <Suspense fallback={null}>{/* <Ocean /> */}</Suspense>
-      <gridHelper args={[1000, 100]} />
+      {boatParameters.showOcean ? (
+        <Suspense fallback={null}>
+          <Ocean />
+        </Suspense>
+      ) : (
+        <gridHelper args={[1000, 100]} />
+      )}
       <FlightEnvelope
         kiteParameters={kiteParameters}
         parameters={{
@@ -109,18 +133,19 @@ export default function Home() {
         onMouseClick={handleClickedEnvelope}
       />
       <Sky scale={1000} sunPosition={[500, 150, -200]} turbidity={0.1} />
-      <BoxyBoat ref={boat} />
-      {/* <Boat ref={boat} position={[0, -10, 0]} scale={5} /> */}
+      {/* <BoxyBoat ref={boat} /> */}
+      <Boat ref={boat} position={[0, -10, 0]} scale={5} />
 
       <Float rotationIntensity={0.4} floatIntensity={20} speed={1.5}>
         <Kite
           kiteAttitude={kiteAttitude}
           scale={3}
-          rotation={[0, -Math.PI / 2 - degToRad(kiteParameters.azimuth_deg), 0]}
+          yaw={degToRad(kiteParameters.azimuth_deg)}
+          // rotation={[0, -Math.PI / 2 - degToRad(kiteParameters.azimuth_deg), 0]}
           ref={kite}
         />
       </Float>
-      <Tether start={boat} end={kite} />
+      {/* <Tether start={boat} end={kite} /> */}
       <OrbitControls makeDefault />
       <Stats />
     </Canvas>
