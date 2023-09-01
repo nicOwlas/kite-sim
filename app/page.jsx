@@ -7,7 +7,7 @@ import { Float, OrbitControls, Sky, Stats } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { useControls } from "leva";
 import { Suspense, useRef, useState } from "react";
-import { Spherical } from "three";
+import { Spherical, Vector3 } from "three";
 import { degToRad } from "three/src/math/MathUtils";
 
 //TODO
@@ -19,6 +19,7 @@ export default function Home() {
   const spaceman = useRef();
   const kite = useRef();
   const boat = useRef();
+  const attachmentPoint = [190, 0, 0];
 
   const kiteParameters = useControls("Kite", {
     length_m: { value: 100, min: 0, max: 400, step: 10 },
@@ -37,17 +38,6 @@ export default function Home() {
       // },
     },
   });
-
-  // const [kiteParameters2, set] = useControls(() => ({
-  //   position: {
-  //     value: { x: 0, y: 0 },
-  //     onChange: (position) => {
-  //       if (circleRef.current) {
-  //         circleRef.current.style.transform = `translate(${position.x}px, ${position.y}px)`;
-  //       }
-  //     },
-  //   },
-  // }));
 
   const boatParameters = useControls("Boat", {
     speed_kt: { value: 10, min: 0, max: 50, step: 1 },
@@ -69,9 +59,7 @@ export default function Home() {
   });
 
   function handleClickedEnvelope(event, envelopeName) {
-    if (envelopeName === "filledEnvelope") {
-      console.log("handleClickedEnvelope", event.intersections[0].point);
-      console.log("handleClickedEnvelope", event.eventObject);
+    if (envelopeName === "wiredEnvelope") {
       const intersectionCartesianCoordinates =
         event.intersections.length > 0 ? event.intersections[0] : null;
       const intersectionSphericalCoordinates = new Spherical().setFromVector3(
@@ -99,15 +87,17 @@ export default function Home() {
         fov: 60,
         near: 0.1,
         far: 3000,
-        position: [-30, 20, 0],
+        position: [120, 50, 120],
+        // orie:(200, 50, 0);
       }}
     >
       <ambientLight />
-      <pointLight position={[100, 100, 100]} intensity={10} />
-      <pointLight position={[-100, -100, -100]} intensity={10} />
+      <pointLight position={[100, 100, 100]} intensity={100} />
+      <pointLight position={[-100, -100, -100]} intensity={100} />
       {boatParameters.showOcean ? (
         <Suspense fallback={null}>
           <Ocean />
+          <Sky scale={1000} sunPosition={[2000, 350, -200]} turbidity={0.1} />
         </Suspense>
       ) : (
         <gridHelper args={[1000, 100]} />
@@ -115,7 +105,8 @@ export default function Home() {
       <FlightEnvelope
         kiteParameters={kiteParameters}
         parameters={{
-          color: "#f542e3",
+          origin: attachmentPoint,
+          color: "#856e82",
           wireframe: true,
           name: "wiredEnvelope",
           widthSegments: 32,
@@ -123,30 +114,20 @@ export default function Home() {
         }}
         onMouseClick={handleClickedEnvelope}
       />
-      <FlightEnvelope
-        kiteParameters={kiteParameters}
-        parameters={{
-          color: "#f7bef2",
-          wireframe: false,
-          name: "filledEnvelope",
-        }}
-        onMouseClick={handleClickedEnvelope}
-      />
-      <Sky scale={1000} sunPosition={[500, 150, -200]} turbidity={0.1} />
-      {/* <BoxyBoat ref={boat} /> */}
-      <Boat ref={boat} position={[0, -10, 0]} scale={5} />
 
+      <Boat ref={boat} position={[0, -10, 0]} scale={5} />
       <Float rotationIntensity={0.4} floatIntensity={20} speed={1.5}>
         <Kite
+          origin={attachmentPoint}
           kiteAttitude={kiteAttitude}
-          scale={3}
+          scale={4}
           yaw={degToRad(kiteParameters.azimuth_deg)}
           // rotation={[0, -Math.PI / 2 - degToRad(kiteParameters.azimuth_deg), 0]}
           ref={kite}
         />
       </Float>
       {/* <Tether start={boat} end={kite} /> */}
-      <OrbitControls makeDefault />
+      <OrbitControls makeDefault target={new Vector3(200, 50, 0)} />
       <Stats />
     </Canvas>
   );
