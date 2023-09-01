@@ -25,18 +25,6 @@ export default function Home() {
     length_m: { value: 100, min: 0, max: 400, step: 10 },
     surface_m2: { value: 10, min: 8, max: 1600, step: 1 },
     liftToDrag: { value: 6, min: 4, max: 10, step: 1 },
-    azimuth_deg: {
-      value: 0,
-      min: -180,
-      max: 180,
-      step: 1,
-      // onChange: (azimuth_deg) => {
-      //   setKiteAttitude((previousValue) => ({
-      //     ...previousValue,
-      //     yaw: degToRad(azimuth_deg),
-      //   }));
-      // },
-    },
   });
 
   const boatParameters = useControls("Boat", {
@@ -46,7 +34,12 @@ export default function Home() {
 
   const windParameters = useControls("Wind", {
     speed_kt: { value: 10, min: 0, max: 50, step: 1 },
-    orientation_deg: { value: 0, min: -180, max: 180, step: 1 },
+    direction_deg: {
+      value: 0,
+      min: -180,
+      max: 180,
+      step: 1,
+    },
   });
 
   const [kiteAttitude, setKiteAttitude] = useState({
@@ -58,29 +51,26 @@ export default function Home() {
     yaw: degToRad(kiteParameters.azimuth_deg),
   });
 
-  function handleClickedEnvelope(event, envelopeName) {
-    if (envelopeName === "wiredEnvelope") {
-      const intersectionCartesianCoordinates =
-        event.intersections.length > 0 ? event.intersections[0] : null;
-      const intersectionSphericalCoordinates = new Spherical().setFromVector3(
-        intersectionCartesianCoordinates.point
-      );
+  function handleClickedEnvelope(event) {
+    const intersectionCartesianCoordinates =
+      event.intersections.length > 0 ? event.intersections[0] : null;
+    const intersectionSphericalCoordinates = new Spherical().setFromVector3(
+      intersectionCartesianCoordinates.point
+    );
 
-      // Transform because THREE and World axis are not aligned
-      setKiteAttitude({
-        radius: intersectionSphericalCoordinates.radius,
-        azimuth: Math.PI / 2 - intersectionSphericalCoordinates.theta,
-        elevation: Math.PI / 2 - intersectionSphericalCoordinates.phi,
-        roll: degToRad(30),
-        pitch: 0,
-        yaw: degToRad(kiteParameters.azimuth_deg),
-      });
+    // Transform because THREE and World axis are not aligned
+    setKiteAttitude({
+      radius: intersectionSphericalCoordinates.radius,
+      azimuth: Math.PI / 2 - intersectionSphericalCoordinates.theta,
+      elevation: Math.PI / 2 - intersectionSphericalCoordinates.phi,
+      roll: degToRad(30),
+      pitch: 0,
+      yaw: degToRad(kiteParameters.azimuth_deg),
+    });
 
-      console.log("KitePosition:", kiteAttitude);
-    }
+    console.log("KitePosition:", kiteAttitude);
   }
 
-  function relativeWindDirection() {}
   return (
     <Canvas
       camera={{
@@ -88,7 +78,6 @@ export default function Home() {
         near: 0.1,
         far: 3000,
         position: [120, 50, 120],
-        // orie:(200, 50, 0);
       }}
     >
       <ambientLight />
@@ -104,6 +93,7 @@ export default function Home() {
       )}
       <FlightEnvelope
         kiteParameters={kiteParameters}
+        windParameters={windParameters}
         parameters={{
           origin: attachmentPoint,
           color: "#856e82",
