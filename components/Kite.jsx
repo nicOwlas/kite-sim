@@ -19,7 +19,11 @@ const Kite = forwardRef((props, ref) => {
   return (
     <group
       position={position}
-      rotation={[0, -Math.PI / 2 - props.yaw, 0]}
+      rotation={[
+        -Math.acos(position.getComponent(2) / 100) + Math.PI / 2,
+        -Math.PI / 2 - props.yaw,
+        0,
+      ]}
       // rotation={[
       //   -Math.acos(position.getComponent(2) / 100) + Math.PI / 2,
       //   0,
