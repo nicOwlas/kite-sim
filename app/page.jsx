@@ -14,12 +14,13 @@ import { degToRad } from "three/src/math/MathUtils";
 
 //TODO
 //Wind gradient
-//Display the flight envelop?
+// DONE Display the flight envelop?
 //Optimal elevation is around 15deg
+// Display traction (N)
+// Display kite elevation
 
 export default function Home() {
   const kite = useRef();
-  const boat = useRef();
   const pod = useRef();
   const podPosition = [195, 15, 0];
 
@@ -107,7 +108,7 @@ export default function Home() {
         onMouseClick={handleClickedEnvelope}
       />
       <Pod ref={pod} position={podPosition} />
-      <Boat ref={boat} position={[0, -10, 0]} scale={5} />
+      <Boat position={[0, -10, 0]} scale={5} />
       <Kite
         origin={podPosition}
         kiteAttitude={kiteAttitude}
