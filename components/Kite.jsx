@@ -8,7 +8,7 @@ import { forwardRef } from "react";
 import { Vector3 } from "three";
 
 const Kite = forwardRef((props, ref) => {
-  const { nodes, materials, animations } = useGLTF("/kite.glb");
+  const { nodes, materials, animations } = useGLTF("/kiteV2.glb");
   const { actions } = useAnimations(animations, ref);
   const position = new Vector3().setFromSphericalCoords(
     props.kiteAttitude.radius,
@@ -17,129 +17,128 @@ const Kite = forwardRef((props, ref) => {
   );
 
   return (
-    <group position={position} rotation={[]} ref={ref}>
+    <group
+      position={position}
+      rotation={[0, -Math.PI / 2 - props.yaw, 0]}
+      // rotation={[
+      //   -Math.acos(position.getComponent(2) / 100) + Math.PI / 2,
+      //   0,
+      //   0,
+      // ]}
+      ref={ref}
+    >
       <axesHelper scale={5} />
-      <group
-        {...props}
-        dispose={null}
-        // model is 6.2m tall
-        position={[3.2 * props.scale, -1 * props.scale, 0]}
-      >
-        <group name="Scene">
-          <group
-            name="Cat_Lowres"
-            position={[-12.692, 24.393, -99.942]}
-            rotation={[0.787, 0.615, 0.227]}
+
+      <group {...props} dispose={null}>
+        <group
+          name="Cat_Lowres"
+          position={[-12.692, 24.393, -99.942]}
+          rotation={[0.787, 0.615, 0.227]}
+        />
+        <group name="Line" rotation={[1.629, 0.089, 1.84]}>
+          <mesh
+            name="Line_1"
+            castShadow
+            receiveShadow
+            geometry={nodes.Line_1.geometry}
+            material={materials["8-_4-_lambert17SG"]}
           />
-          <group
-            name="Line"
-            position={[0.394, 2.812, -0.205]}
-            rotation={[1.629, 0.089, 1.84]}
-          >
-            <mesh
-              name="Line_1"
-              castShadow
-              receiveShadow
-              geometry={nodes.Line_1.geometry}
-              material={materials["8-_4-_lambert17SG"]}
-            />
-            <mesh
-              name="Line_2"
-              castShadow
-              receiveShadow
-              geometry={nodes.Line_2.geometry}
-              material={materials["9-_4-_lambert17SG"]}
-            />
-            <mesh
-              name="Line_3"
-              castShadow
-              receiveShadow
-              geometry={nodes.Line_3.geometry}
-              material={materials["12-_6-_lambert7SG"]}
-            />
-            <mesh
-              name="Line_4"
-              castShadow
-              receiveShadow
-              geometry={nodes.Line_4.geometry}
-              material={materials["13-_6-_lambert7SG"]}
-            />
-            <mesh
-              name="Line_5"
-              castShadow
-              receiveShadow
-              geometry={nodes.Line_5.geometry}
-              material={materials["10-_5-_lambert19SG"]}
-            />
-            <mesh
-              name="Line_6"
-              castShadow
-              receiveShadow
-              geometry={nodes.Line_6.geometry}
-              material={materials["11-_5-_lambert19SG"]}
-            />
-            <mesh
-              name="Line_7"
-              castShadow
-              receiveShadow
-              geometry={nodes.Line_7.geometry}
-              material={materials["6-_3-_initialShadingG"]}
-            />
-            <mesh
-              name="Line_8"
-              castShadow
-              receiveShadow
-              geometry={nodes.Line_8.geometry}
-              material={materials["7-_3-_initialShadingG"]}
-            />
-            <mesh
-              name="Line_9"
-              castShadow
-              receiveShadow
-              geometry={nodes.Line_9.geometry}
-              material={materials.Material}
-            />
-            <mesh
-              name="Line_10"
-              castShadow
-              receiveShadow
-              geometry={nodes.Line_10.geometry}
-              material={materials["Material.001"]}
-            />
-            <mesh
-              name="Line_11"
-              castShadow
-              receiveShadow
-              geometry={nodes.Line_11.geometry}
-              material={materials["0-_0-_VRayMtl4SG"]}
-            />
-            <mesh
-              name="Line_12"
-              castShadow
-              receiveShadow
-              geometry={nodes.Line_12.geometry}
-              material={materials["1-_0-_VRayMtl4SG"]}
-            />
-            <mesh
-              name="Line_13"
-              castShadow
-              receiveShadow
-              geometry={nodes.Line_13.geometry}
-              material={materials.equipment}
-            />
-          </group>
-          <group
-            name="Texture_Group"
-            position={[-12.692, 24.393, -99.942]}
-            rotation={[0.787, 0.615, 0.227]}
+          <mesh
+            name="Line_2"
+            castShadow
+            receiveShadow
+            geometry={nodes.Line_2.geometry}
+            material={materials["9-_4-_lambert17SG"]}
+          />
+          <mesh
+            name="Line_3"
+            castShadow
+            receiveShadow
+            geometry={nodes.Line_3.geometry}
+            material={materials["12-_6-_lambert7SG"]}
+          />
+          <mesh
+            name="Line_4"
+            castShadow
+            receiveShadow
+            geometry={nodes.Line_4.geometry}
+            material={materials["13-_6-_lambert7SG"]}
+          />
+          <mesh
+            name="Line_5"
+            castShadow
+            receiveShadow
+            geometry={nodes.Line_5.geometry}
+            material={materials["10-_5-_lambert19SG"]}
+          />
+          <mesh
+            name="Line_6"
+            castShadow
+            receiveShadow
+            geometry={nodes.Line_6.geometry}
+            material={materials["11-_5-_lambert19SG"]}
+          />
+          <mesh
+            name="Line_7"
+            castShadow
+            receiveShadow
+            geometry={nodes.Line_7.geometry}
+            material={materials["6-_3-_initialShadingG"]}
+          />
+          <mesh
+            name="Line_8"
+            castShadow
+            receiveShadow
+            geometry={nodes.Line_8.geometry}
+            material={materials["7-_3-_initialShadingG"]}
+          />
+          <mesh
+            name="Line_9"
+            castShadow
+            receiveShadow
+            geometry={nodes.Line_9.geometry}
+            material={materials.Material}
+          />
+          <mesh
+            name="Line_10"
+            castShadow
+            receiveShadow
+            geometry={nodes.Line_10.geometry}
+            material={materials["Material.001"]}
+          />
+          <mesh
+            name="Line_11"
+            castShadow
+            receiveShadow
+            geometry={nodes.Line_11.geometry}
+            material={materials["0-_0-_VRayMtl4SG"]}
+          />
+          <mesh
+            name="Line_12"
+            castShadow
+            receiveShadow
+            geometry={nodes.Line_12.geometry}
+            material={materials["1-_0-_VRayMtl4SG"]}
+          />
+          <mesh
+            name="Line_13"
+            castShadow
+            receiveShadow
+            geometry={nodes.Line_13.geometry}
+            material={materials.equipment}
           />
         </group>
+        <group
+          name="Texture_Group"
+          position={[-12.692, 24.393, -99.942]}
+          rotation={[0.787, 0.615, 0.227]}
+        />
       </group>
     </group>
   );
 });
 
-useGLTF.preload("/kite.glb");
+useGLTF.preload("/kiteV2.glb");
 
 Kite.displayName = "Kite";
 
