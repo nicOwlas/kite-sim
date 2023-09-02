@@ -3,6 +3,8 @@ import Boat from "@/components/Boat";
 import FlightEnvelope from "@/components/FlightEnvelope";
 import Kite from "@/components/Kite";
 import Ocean from "@/components/Ocean";
+import Pod from "@/components/Pod";
+import Tether from "@/components/Tether";
 import { Float, OrbitControls, Sky, Stats } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { useControls } from "leva";
@@ -16,10 +18,10 @@ import { degToRad } from "three/src/math/MathUtils";
 //Optimal elevation is around 15deg
 
 export default function Home() {
-  const spaceman = useRef();
   const kite = useRef();
   const boat = useRef();
-  const attachmentPoint = [190, 0, 0];
+  const pod = useRef();
+  const podPosition = [195, 15, 0];
 
   const kiteParameters = useControls("Kite", {
     length_m: { value: 100, min: 0, max: 400, step: 10 },
@@ -95,7 +97,7 @@ export default function Home() {
         kiteParameters={kiteParameters}
         windParameters={windParameters}
         parameters={{
-          origin: attachmentPoint,
+          origin: podPosition,
           color: "#856e82",
           wireframe: true,
           name: "wiredEnvelope",
@@ -104,19 +106,18 @@ export default function Home() {
         }}
         onMouseClick={handleClickedEnvelope}
       />
-
+      <Pod ref={pod} position={podPosition} />
       <Boat ref={boat} position={[0, -10, 0]} scale={5} />
-      <Float rotationIntensity={0.4} floatIntensity={20} speed={1.5}>
-        <Kite
-          origin={attachmentPoint}
-          kiteAttitude={kiteAttitude}
-          scale={4}
-          yaw={degToRad(kiteParameters.azimuth_deg)}
-          // rotation={[0, -Math.PI / 2 - degToRad(kiteParameters.azimuth_deg), 0]}
-          ref={kite}
-        />
-      </Float>
-      {/* <Tether start={boat} end={kite} /> */}
+      <Kite
+        origin={podPosition}
+        kiteAttitude={kiteAttitude}
+        scale={4}
+        yaw={degToRad(windParameters.direction_deg)}
+        // rotation={[0, -Math.PI / 2 - degToRad(kiteParameters.azimuth_deg), 0]}
+        ref={kite}
+      />
+      <Float rotationIntensity={0.4} floatIntensity={0} speed={1.5}></Float>
+      <Tether start={pod} end={kite} />
       <OrbitControls makeDefault target={new Vector3(200, 50, 0)} />
       <Stats />
     </Canvas>

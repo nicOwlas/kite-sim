@@ -16,10 +16,11 @@ export default function Tether({
       ref.current.setPoints(
         start.current.getWorldPosition(v1),
         end.current.getWorldPosition(v2),
-        v3.addVectors(v1, v2)
+        v3.addVectors(v1, v2).multiplyScalar(0.5)
       ),
     []
   );
+  console.log(start);
   return (
     <QuadraticBezierLine
       ref={ref}
