@@ -14,11 +14,12 @@ const Kite = forwardRef((props, ref) => {
   const podPositionVector = new Vector3();
   podPositionVector.fromArray(props.podPosition);
 
+  const { radius, azimuth, elevation } = props.kiteAttitude;
   const position = new Vector3()
     .setFromSphericalCoords(
-      props.kiteAttitude.radius,
-      Math.PI / 2 - props.kiteAttitude.elevation,
-      -props.kiteAttitude.azimuth + Math.PI / 2
+      radius,
+      Math.PI / 2 - elevation,
+      -azimuth + Math.PI / 2
     )
     .add(podPositionVector); // Origin of Spherical coordinates is at podPosition
 
@@ -28,7 +29,7 @@ const Kite = forwardRef((props, ref) => {
       ref.current.rotation.z =
         degToRad(props.windParameters.direction_deg) + Math.PI / 2;
     }
-  }, [podPositionVector]);
+  }, [props.podPosition]);
 
   return (
     <group position={position} ref={ref}>
