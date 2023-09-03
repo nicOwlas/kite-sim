@@ -15,7 +15,7 @@ import { degToRad } from "three/src/math/MathUtils";
 //TODO
 //Wind gradient
 // DONE Display the flight envelop?
-//Optimal elevation is around 15deg
+// DONE Rotation of kite
 // Display traction (N)
 // Display kite elevation
 
@@ -47,28 +47,38 @@ export default function Home() {
 
   const [kiteAttitude, setKiteAttitude] = useState({
     radius: kiteParameters.length_m,
-    azimuth: degToRad(kiteParameters.azimuth_deg),
-    elevation: Math.PI / 6,
+    azimuth: degToRad(windParameters.direction_deg),
+    elevation: Math.PI / 12,
     roll: 0,
     pitch: 0,
-    yaw: degToRad(kiteParameters.azimuth_deg),
+    yaw: degToRad(windParameters.direction_deg),
   });
 
   function handleClickedEnvelope(event) {
     const intersectionCartesianCoordinates =
       event.intersections.length > 0 ? event.intersections[0] : null;
-    const intersectionSphericalCoordinates = new Spherical().setFromVector3(
-      intersectionCartesianCoordinates.point
+    const point = intersectionCartesianCoordinates.point;
+    // Account that origin of envelop is at podPosition
+    // Step 1: Translate point to new origin
+    const translatedPoint = new Vector3(
+      point.x - podPosition[0],
+      point.y - podPosition[1],
+      point.z - podPosition[2]
     );
+
+    const intersectionSphericalCoordinates = new Spherical().setFromVector3(
+      translatedPoint
+    );
+    console.log("Kite spherical coordinates", intersectionSphericalCoordinates);
 
     // Transform because THREE and World axis are not aligned
     setKiteAttitude({
       radius: intersectionSphericalCoordinates.radius,
       azimuth: Math.PI / 2 - intersectionSphericalCoordinates.theta,
       elevation: Math.PI / 2 - intersectionSphericalCoordinates.phi,
-      roll: degToRad(30),
+      roll: 0,
       pitch: 0,
-      yaw: degToRad(kiteParameters.azimuth_deg),
+      yaw: degToRad(windParameters.direction_deg),
     });
 
     console.log("KitePosition:", kiteAttitude);
@@ -110,11 +120,12 @@ export default function Home() {
       <Pod ref={pod} position={podPosition} />
       <Boat position={[0, -10, 0]} scale={5} />
       <Kite
-        origin={podPosition}
+        podPosition={podPosition}
         kiteAttitude={kiteAttitude}
+        kiteParameters={kiteParameters}
+        windParameters={windParameters}
         scale={4}
         yaw={degToRad(windParameters.direction_deg)}
-        // rotation={[0, -Math.PI / 2 - degToRad(kiteParameters.azimuth_deg), 0]}
         ref={kite}
       />
       <Float rotationIntensity={0.4} floatIntensity={0} speed={1.5}></Float>
