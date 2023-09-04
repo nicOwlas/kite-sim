@@ -7,10 +7,9 @@ import Pod from "@/components/Pod";
 import { Float, OrbitControls, Sky, Stats } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { useControls } from "leva";
-import { Suspense, useRef, useState } from "react";
-import { useSpring } from "react-spring/three";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { Spherical, Vector3 } from "three";
-import { degToRad } from "three/src/math/MathUtils";
+import { degToRad, radToDeg } from "three/src/math/MathUtils";
 
 //TODO
 //Wind gradient
@@ -54,16 +53,17 @@ export default function Home() {
     yaw: degToRad(windParameters.direction_deg),
   });
 
-  const springProps = useSpring({
-    from: kiteAttitude,
-    to: kiteAttitude,
-    config: { tension: 40, friction: 10 },
-  });
+  const [prevKiteAttitude, setPrevKiteAttitude] = useState(kiteAttitude);
+
+  useEffect(() => {
+    setPrevKiteAttitude(kiteAttitude);
+  }, [kiteAttitude]);
 
   function handleClickedEnvelope(event) {
     const intersectionCartesianCoordinates =
-      event.intersections.length > 0 ? event.intersections[0] : null;
+      event.intersections.length >= 0 ? event.intersections[0] : null;
     const point = intersectionCartesianCoordinates.point;
+    console.log("Intersection point", event.intersections, point);
     // Account that origin of envelop is at podPosition
     // Step 1: Translate point to new origin
     const translatedPoint = new Vector3(
@@ -75,7 +75,6 @@ export default function Home() {
     const intersectionSphericalCoordinates = new Spherical().setFromVector3(
       translatedPoint
     );
-    console.log("Kite spherical coordinates", intersectionSphericalCoordinates);
 
     // Transform because THREE and World axis are not aligned
     setKiteAttitude({
@@ -87,7 +86,12 @@ export default function Home() {
       yaw: degToRad(windParameters.direction_deg),
     });
 
-    console.log("KitePosition:", kiteAttitude);
+    console.log(
+      "KitePosition: Radius, Elevation, Azimuth",
+      kiteAttitude.radius,
+      radToDeg(kiteAttitude.elevation),
+      radToDeg(kiteAttitude.azimuth)
+    );
   }
 
   return (
@@ -128,7 +132,7 @@ export default function Home() {
       <Kite
         podPosition={podPosition}
         kiteAttitude={kiteAttitude}
-        // kiteAttitude={springProps}
+        prevKiteAttitude={prevKiteAttitude}
         kiteParameters={kiteParameters}
         windParameters={windParameters}
         scale={4}
