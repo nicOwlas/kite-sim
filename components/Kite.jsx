@@ -36,7 +36,7 @@ const Kite = forwardRef((props, ref) => {
       <axesHelper scale={5} />
 
       <group {...props} dispose={null}>
-        <group name="kiteV2_originglb" rotation={[-Math.PI / 2, 0, 0]}>
+        <group name="kiteV2.glb" rotation={[-Math.PI / 2, 0, 0]}>
           <group
             name="Cat_Lowres"
             position={[-12.692, 24.393, -99.942]}

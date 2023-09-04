@@ -9,7 +9,7 @@ Title: Maersk Container Ship
 import { useGLTF } from "@react-three/drei";
 
 export default function Boat(props) {
-  const { nodes, materials } = useGLTF("/maersk_container_ship.glb");
+  const { nodes, materials } = useGLTF("/maersk_container_ship_light.glb");
   return (
     <group {...props} dispose={null}>
       <group scale={0.01}>
@@ -57,4 +57,4 @@ export default function Boat(props) {
   );
 }
 
-useGLTF.preload("/maersk_container_ship.glb");
+useGLTF.preload("/maersk_container_ship_light.glb");

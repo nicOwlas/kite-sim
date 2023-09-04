@@ -25,7 +25,7 @@ export default function Tether({
     <QuadraticBezierLine
       ref={ref}
       lineWidth={3}
-      color="#fa2060"
+      color="#3b3b3b"
       segments={10}
     />
   );
