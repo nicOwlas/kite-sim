@@ -1,5 +1,6 @@
 "use client";
 import Boat from "@/components/Boat";
+import Dashboard from "@/components/Dashboard";
 import FlightEnvelope from "@/components/FlightEnvelope";
 import Kite from "@/components/Kite";
 import Ocean from "@/components/Ocean";
@@ -35,8 +36,8 @@ export default function Home() {
     showOcean: true,
   });
 
-  const windParameters = useControls("Wind", {
-    speed_kt: { value: 10, min: 0, max: 50, step: 1 },
+  const windParameters = useControls("Wind on deck", {
+    speed_kt: { value: 20, min: 0, max: 50, step: 1 },
     direction_deg: {
       value: 0,
       min: -180,
@@ -69,7 +70,6 @@ export default function Home() {
     const intersectionSphericalCoordinates = new Spherical().setFromVector3(
       translatedPoint
     );
-    console.log("Kite spherical coordinates", intersectionSphericalCoordinates);
 
     // Transform because THREE and World axis are not aligned
     setKiteAttitude({
@@ -80,58 +80,68 @@ export default function Home() {
       pitch: 0,
       yaw: degToRad(windParameters.direction_deg),
     });
-
-    console.log("KitePosition:", kiteAttitude);
   }
 
   return (
-    <Canvas
-      camera={{
-        fov: 60,
-        near: 0.1,
-        far: 3000,
-        position: [120, 50, 120],
-      }}
-    >
-      <ambientLight />
-      <pointLight position={[100, 100, 100]} intensity={100} />
-      <pointLight position={[-100, -100, -100]} intensity={100} />
-      {boatParameters.showOcean ? (
-        <Suspense fallback={null}>
-          <Ocean />
-          <Sky scale={1000} sunPosition={[2000, 350, -200]} turbidity={0.1} />
-        </Suspense>
-      ) : (
-        <gridHelper args={[1000, 100]} />
-      )}
-      <FlightEnvelope
-        kiteParameters={kiteParameters}
-        windParameters={windParameters}
-        parameters={{
-          origin: podPosition,
-          color: "#856e82",
-          wireframe: true,
-          name: "wiredEnvelope",
-          widthSegments: 32,
-          heightSegments: 16,
+    <>
+      <Dashboard
+        className="dashboard"
+        number1={42}
+        number2={3.14}
+        number3={7}
+      />
+      <Canvas
+        camera={{
+          fov: 60,
+          near: 0.1,
+          far: 3000,
+          position: [120, 50, 120],
         }}
-        onMouseClick={handleClickedEnvelope}
-      />
-      <Pod ref={pod} position={podPosition} />
-      <Boat position={[0, -10, 0]} scale={5} />
-      <Kite
-        podPosition={podPosition}
-        kiteAttitude={kiteAttitude}
-        kiteParameters={kiteParameters}
-        windParameters={windParameters}
-        scale={4}
-        yaw={degToRad(windParameters.direction_deg)}
-        ref={kite}
-      />
-      <Float rotationIntensity={0.4} floatIntensity={0} speed={1.5}></Float>
-      <Tether start={pod} end={kite} />
-      <OrbitControls makeDefault target={new Vector3(200, 50, 0)} />
-      <Stats />
-    </Canvas>
+      >
+        <ambientLight />
+        <pointLight position={[100, 100, 100]} intensity={100} />
+        <pointLight position={[-100, -100, -100]} intensity={100} />
+        {boatParameters.showOcean ? (
+          <Suspense fallback={null}>
+            <Ocean />
+            <Sky scale={1000} sunPosition={[2000, 350, -200]} turbidity={0.1} />
+          </Suspense>
+        ) : (
+          <gridHelper args={[1000, 100]} />
+        )}
+        <FlightEnvelope
+          kiteParameters={kiteParameters}
+          windParameters={windParameters}
+          parameters={{
+            origin: podPosition,
+            color: "#856e82",
+            wireframe: true,
+            name: "wiredEnvelope",
+            widthSegments: 32,
+            heightSegments: 16,
+          }}
+          onMouseClick={handleClickedEnvelope}
+        />
+        <Pod ref={pod} position={podPosition} />
+        <Float rotationIntensity={0.1} floatIntensity={0.2} speed={1}>
+          <Boat position={[0, -10, 0]} scale={5} />
+        </Float>
+
+        <Float rotationIntensity={0.2} floatIntensity={0.2} speed={1}>
+          <Kite
+            podPosition={podPosition}
+            kiteAttitude={kiteAttitude}
+            kiteParameters={kiteParameters}
+            windParameters={windParameters}
+            scale={4}
+            yaw={degToRad(windParameters.direction_deg)}
+            ref={kite}
+          />
+        </Float>
+        <Tether start={pod} end={kite} />
+        <OrbitControls makeDefault target={new Vector3(200, 50, 0)} />
+        <Stats />
+      </Canvas>
+    </>
   );
 }
