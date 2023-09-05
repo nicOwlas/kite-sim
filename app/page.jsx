@@ -28,14 +28,9 @@ export default function Home() {
   const kiteModelSurface = 13.8;
 
   const kiteParameters = useControls("Kite", {
-    length_m: { value: 150, min: 0, max: 400, step: 10 },
+    length_m: { value: 150, min: 0, max: 400, step: 1 },
     surface_m2: { value: 400, min: 8, max: 1600, step: 1 },
     liftToDrag: { value: 6, min: 4, max: 10, step: 1 },
-  });
-
-  const displayParameters = useControls("Display", {
-    // speed_kt: { value: 10, min: 0, max: 50, step: 1 },
-    showOcean: true,
   });
 
   const windParameters = useControls("Wind on deck", {
@@ -46,6 +41,11 @@ export default function Home() {
       max: 180,
       step: 1,
     },
+  });
+
+  const displayParameters = useControls("Display", {
+    // speed_kt: { value: 10, min: 0, max: 50, step: 1 },
+    showOcean: true,
   });
 
   const [kiteAttitude, setKiteAttitude] = useState({
@@ -133,7 +133,7 @@ export default function Home() {
           onMouseClick={handleClickedEnvelope}
         />
 
-        <Float rotationIntensity={0.05} floatIntensity={0.4} speed={1}>
+        <Float rotationIntensity={0.05} floatIntensity={10} speed={1}>
           <Pod ref={pod} position={podPosition} />
           <Boat position={[0, -10, 0]} scale={5} />
         </Float>
