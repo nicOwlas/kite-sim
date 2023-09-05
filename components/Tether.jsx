@@ -20,7 +20,7 @@ export default function Tether({
       ),
     []
   );
-  console.log(start);
+
   return (
     <QuadraticBezierLine
       ref={ref}

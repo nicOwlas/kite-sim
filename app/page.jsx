@@ -24,15 +24,16 @@ export default function Home() {
   const kite = useRef();
   const pod = useRef();
   const podPosition = [195, 15, 0];
+  const kiteModelSurface = 13.8;
 
   const kiteParameters = useControls("Kite", {
-    length_m: { value: 100, min: 0, max: 400, step: 10 },
-    surface_m2: { value: 10, min: 8, max: 1600, step: 1 },
+    length_m: { value: 150, min: 0, max: 400, step: 10 },
+    surface_m2: { value: 400, min: 8, max: 1600, step: 1 },
     liftToDrag: { value: 6, min: 4, max: 10, step: 1 },
   });
 
-  const boatParameters = useControls("Boat", {
-    speed_kt: { value: 10, min: 0, max: 50, step: 1 },
+  const displayParameters = useControls("Display", {
+    // speed_kt: { value: 10, min: 0, max: 50, step: 1 },
     showOcean: true,
   });
 
@@ -95,13 +96,13 @@ export default function Home() {
           fov: 60,
           near: 0.1,
           far: 3000,
-          position: [120, 50, 120],
+          position: [100, 50, 80],
         }}
       >
         <ambientLight />
         <pointLight position={[100, 100, 100]} intensity={100} />
         <pointLight position={[-100, -100, -100]} intensity={100} />
-        {boatParameters.showOcean ? (
+        {displayParameters.showOcean ? (
           <Suspense fallback={null}>
             <Ocean />
             <Sky scale={1000} sunPosition={[2000, 350, -200]} turbidity={0.1} />
@@ -122,8 +123,9 @@ export default function Home() {
           }}
           onMouseClick={handleClickedEnvelope}
         />
-        <Pod ref={pod} position={podPosition} />
-        <Float rotationIntensity={0.1} floatIntensity={0.2} speed={1}>
+
+        <Float rotationIntensity={0.05} floatIntensity={0.4} speed={1}>
+          <Pod ref={pod} position={podPosition} />
           <Boat position={[0, -10, 0]} scale={5} />
         </Float>
 
@@ -133,7 +135,7 @@ export default function Home() {
             kiteAttitude={kiteAttitude}
             kiteParameters={kiteParameters}
             windParameters={windParameters}
-            scale={4}
+            scale={Math.sqrt(kiteParameters.surface_m2 / kiteModelSurface)}
             yaw={degToRad(windParameters.direction_deg)}
             ref={kite}
           />
