@@ -15,7 +15,8 @@ const element = (title, value) => {
   );
 };
 
-const Dashboard = ({ props }) => {
+const Dashboard = (props) => {
+  // console.log("Dashboard", props);
   return (
     <div
       style={{
@@ -29,11 +30,14 @@ const Dashboard = ({ props }) => {
         color: "black",
       }}
     >
-      {element("Propulsive Force (N)", props?.traction ? props.traction : 1)}
       {element(
+        "Propulsive Force (N)",
+        props?.propulsiveForce ? props.propulsiveForce : 1
+      )}
+      {/* {element(
         "True Wind Speed (m/s)",
         props?.trueWindSpeed ? props.trueWindSpeed : 0
-      )}
+      )} */}
     </div>
   );
 };

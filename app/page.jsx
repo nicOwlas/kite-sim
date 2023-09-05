@@ -6,10 +6,11 @@ import Kite from "@/components/Kite";
 import Ocean from "@/components/Ocean";
 import Pod from "@/components/Pod";
 import Tether from "@/components/Tether";
+import traction from "@/utils/traction";
 import { Float, OrbitControls, Sky, Stats } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { useControls } from "leva";
-import { Suspense, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { Spherical, Vector3 } from "three";
 import { degToRad } from "three/src/math/MathUtils";
 
@@ -83,14 +84,22 @@ export default function Home() {
     });
   }
 
+  const [propulsiveForce, setPropulsiveForce] = useState(null); // Initialize state
+
+  useEffect(() => {
+    // console.log("useEffect here");
+    const newPropulsiveForce = traction({
+      kiteAttitude,
+      kiteParameters,
+      windParameters,
+    });
+    setPropulsiveForce(newPropulsiveForce); // Update state
+  }, [windParameters, kiteAttitude, kiteParameters]);
+  // console.log("Propulsive force", propulsiveForce);
+
   return (
     <>
-      <Dashboard
-        className="dashboard"
-        number1={42}
-        number2={3.14}
-        number3={7}
-      />
+      <Dashboard propulsiveForce={propulsiveForce} />
       <Canvas
         camera={{
           fov: 60,
