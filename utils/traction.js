@@ -1,4 +1,4 @@
-import { degToRad, radToDeg } from "three/src/math/MathUtils";
+import { degToRad } from "three/src/math/MathUtils";
 const angleDifference = (angle1, angle2) => {
   // Return a value between -PI and +PI
   let diff = ((angle1 - angle2 + Math.PI) % (2 * Math.PI)) - Math.PI;
@@ -17,8 +17,17 @@ function traction(props) {
   const airDensity = 1.225; //kg.m-3
   const liftToDragAngle = Math.atan(1 / liftToDragRatio);
 
+  const kiteHeightAboveSea = Math.sin(elevation) * radius + 10; //10m added to avoid a 0m/s velocity when elevation = 0deg
+
+  // Wind gradient formula description given by ITTC 2011
+  const windSpeedAtKiteLevel = windSpeed * (kiteHeightAboveSea / 10) ** (1 / 7);
+
   const traction =
-    (0.5 * liftCoefficient * airDensity * kiteSurface * windSpeed ** 2) /
+    (0.5 *
+      liftCoefficient *
+      airDensity *
+      kiteSurface *
+      windSpeedAtKiteLevel ** 2) /
     Math.cos(liftToDragAngle);
 
   const propulsiveForce =
@@ -28,14 +37,6 @@ function traction(props) {
         Math.cos(elevation) *
         Math.sin(windDirection));
 
-  console.log(
-    "Wind direction",
-    radToDeg(windDirection),
-    Math.round(radToDeg(azimuth)),
-    Math.round(radToDeg(relativeAzimuth)),
-    Math.round(traction),
-    Math.round(propulsiveForce)
-  );
   return Math.round(propulsiveForce);
 }
 

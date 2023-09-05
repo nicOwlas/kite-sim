@@ -95,6 +95,13 @@ export default function Home() {
     });
     setPropulsiveForce(newPropulsiveForce); // Update state
   }, [windParameters, kiteAttitude, kiteParameters]);
+
+  useEffect(() => {
+    setKiteAttitude((previousState) => ({
+      ...previousState,
+      radius: kiteParameters.length_m,
+    }));
+  }, [kiteParameters]);
   // console.log("Propulsive force", propulsiveForce);
 
   return (
