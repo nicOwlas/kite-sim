@@ -1,34 +1,63 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Traction Kite Flight Simulator 🪁🚤
 
-## Getting Started
+![Project Banner](https://github.com/nicOwlas/kite-sim/blob/main/public/preview.jpg?raw=true)
 
-First, run the development server:
+## Overview
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-```
+Welcome to the Traction Kite Flight Simulator! This project aims to provide an interactive, educational, and fun way to explore the dynamics of kite-powered boating. Whether you're a student, a researcher, or just curious, this simulator offers a hands-on approach to understanding the physics and mechanics of kite traction in a marine environment.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Features
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+- Realistic 3D environment
+- Customizable wind and kite parameters
+- Intuitive controls and UI
+- Real-time analytics dashboard
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## Tech Stack
 
-## Learn More
+- React.js
+- Three.js
+- React Spring
+- Next.js
+- Vercel for deployment
 
-To learn more about Next.js, take a look at the following resources:
+## Installation
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Clone the repository:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+   ```bash
+   git clone https://github.com/nicOwlas/kite-sim.git
+   ```
 
-## Deploy on Vercel
+2. Navigate to the project directory:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+    ```bash
+     cd kite-sim
+     ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+3. Install dependencies:
+
+   ```bash
+   npm install
+   ```
+
+4. Run the development server:
+
+    ```bash
+     npm run dev
+     ```
+
+5. Open http://localhost:3000 in your browser to see the simulator in action.
+
+## Usage
+
+1. **Setting Parameters**: Use the control panel to set the wind speed, kite size, and other parameters.
+2. **Interacting with the Kite**: Click on the flight envelope to change the kite position and observe the effects on traction.
+
+## Contributing
+
+We welcome contributions!
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
