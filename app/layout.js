@@ -22,13 +22,19 @@ export default function RootLayout({ children }) {
         {/* Open Graph */}
         <meta property="og:title" content={metadata.title} />
         <meta property="og:description" content={metadata.description} />
-        <meta property="og:image" content={metadata.image} />
+        <meta
+          property="og:image"
+          content="https://github.com/nicOwlas/kite-sim/blob/main/public/preview.jpg?raw=true"
+        />
         <meta property="og:url" content={metadata.url} />
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={metadata.title} />
         <meta name="twitter:description" content={metadata.description} />
-        <meta name="twitter:image" content={metadata.image} />
+        <meta
+          name="twitter:image"
+          content="https://github.com/nicOwlas/kite-sim/blob/main/public/preview.jpg?raw=true"
+        />
       </Head>
       <body className={inter.className}>
         {children} <Analytics />
