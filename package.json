@@ -13,6 +13,8 @@
     "@react-three/drei": "^9.80.6",
     "@react-three/fiber": "^8.13.7",
     "@types/three": "^0.155.1",
+    "@vercel/analytics": "^1.0.2",
+    "@vercel/og": "^0.5.13",
     "eslint": "8.47.0",
     "eslint-config-next": "13.4.19",
     "leva": "^0.9.35",
