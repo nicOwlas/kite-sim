@@ -41,8 +41,3 @@ function traction(props) {
 }
 
 export default traction;
-
-// Test the function
-// console.log(angleDifference(Math.PI / 3, Math.PI / 6)); // Should print -Math.PI / 2
-// console.log(angleDifference(-Math.PI / 2, Math.PI)); // Should print -Math.PI / 2
-// console.log(angleDifference(Math.PI, Math.PI / 2)); // Should print Math.PI / 2
