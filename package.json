@@ -6,21 +6,28 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
-    "@react-spring/three": "^9.7.3",
     "@react-three/drei": "^9.80.6",
     "@react-three/fiber": "^8.13.7",
-    "@types/three": "^0.155.1",
     "@vercel/analytics": "^1.0.2",
-    "@vercel/og": "^0.5.13",
-    "eslint": "8.47.0",
-    "eslint-config-next": "13.4.19",
     "leva": "^0.9.35",
     "next": "13.4.19",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "three": "^0.155.0"
+  },
+  "devDependencies": {
+    "@types/node": "25.5.0",
+    "@types/react": "18.2.0",
+    "@types/react-dom": "18.2.0",
+    "@types/three": "0.155.1",
+    "eslint": "8.47.0",
+    "eslint-config-next": "13.4.19",
+    "typescript": "^6.0.2",
+    "vitest": "^4.1.2"
   }
 }

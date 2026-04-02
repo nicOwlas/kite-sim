@@ -1,7 +1,7 @@
 import { Points } from "@react-three/drei";
 import { forwardRef } from "react";
 
-const Pod = forwardRef((props, ref) => {
+const Pod = forwardRef<any, any>((props, ref) => {
   return <Points ref={ref} {...props} />;
 });
 

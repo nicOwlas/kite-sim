@@ -1,6 +1,6 @@
-//layout.js
 import { Analytics } from "@vercel/analytics/react";
 import { Inter } from "next/font/google";
+import { ReactNode } from "react";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -14,7 +14,7 @@ export const metadata = {
   url: "https://kite-sim-nicolasdraber.vercel.app/",
 };
 
-export default function RootLayout({ children }) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <head>

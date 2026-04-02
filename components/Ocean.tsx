@@ -6,9 +6,9 @@ import { Water } from "three-stdlib";
 extend({ Water });
 
 export default function Ocean() {
-  const ref = useRef();
+  const ref = useRef<any>(null);
   const gl = useThree((state) => state.gl);
-  let waterNormals = useLoader(TextureLoader, "/waternormals.jpeg");
+  const waterNormals = useLoader(TextureLoader, "/waternormals.jpeg");
 
   waterNormals.wrapS = waterNormals.wrapT = RepeatWrapping;
   const planeGeometry = new PlaneGeometry(10000, 10000);
@@ -23,12 +23,15 @@ export default function Ocean() {
       waterColor: 0x001e0f,
       distortionScale: 3.7,
       fog: false,
-      format: gl.encoding,
+      format: (gl as any).encoding,
     }),
     [waterNormals]
   );
-  useFrame((state, delta) => {
-    ref.current.material.uniforms.time.value += delta;
+  useFrame((_state, delta) => {
+    if (ref.current) {
+      ref.current.material.uniforms.time.value += delta;
+    }
   });
+  // @ts-expect-error Water is extended into R3F but has no JSX type
   return <water ref={ref} args={[geom, config]} rotation-x={-Math.PI / 2} />;
 }
