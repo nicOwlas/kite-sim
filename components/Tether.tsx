@@ -28,7 +28,7 @@ export default function Tether({ start, end }: TetherProps) {
       ref={ref}
       lineWidth={3}
       color="#3b3b3b"
-      // @ts-expect-error segments type mismatch in drei@9 types
+      // @ts-expect-error segments not in QuadraticBezierLine types
       segments={10}
     />
   );

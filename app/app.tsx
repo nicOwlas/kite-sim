@@ -11,7 +11,7 @@ import traction from "@/utils/traction";
 import { Float, OrbitControls, Sky, Stats } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { useControls } from "leva";
-import { Suspense, useEffect, useRef, useState } from "react";
+import { Suspense, useMemo, useRef, useState } from "react";
 import { Group, Points, Spherical, Vector3 } from "three";
 import { MathUtils } from "three";
 const { degToRad } = MathUtils;
@@ -76,30 +76,22 @@ export default function App() {
     });
   }
 
-  const [propulsiveForce, setPropulsiveForce] = useState<number | null>(null);
+  const kiteAttitudeWithRadius = useMemo(
+    () => ({ ...kiteAttitude, radius: kiteParameters.length_m }),
+    [kiteAttitude, kiteParameters.length_m]
+  );
 
-  useEffect(() => {
-    const newPropulsiveForce = traction({
-      kiteAttitude,
-      kiteParameters,
-      windParameters,
-    });
-    setPropulsiveForce(newPropulsiveForce); // Update state
-  }, [windParameters, kiteAttitude, kiteParameters]);
-
-  useEffect(() => {
-    setKiteAttitude((previousState) => ({
-      ...previousState,
-      radius: kiteParameters.length_m,
-    }));
-  }, [kiteParameters]);
+  const propulsiveForce = useMemo(
+    () => traction({ kiteAttitude: kiteAttitudeWithRadius, kiteParameters, windParameters }),
+    [kiteAttitudeWithRadius, kiteParameters, windParameters]
+  );
 
   return (
     <>
       <Dashboard
         propulsiveForce={propulsiveForce}
-        kiteElevationDeg={Math.round(MathUtils.radToDeg(kiteAttitude.elevation))}
-        kiteAltitudeM={Math.round(Math.sin(kiteAttitude.elevation) * kiteAttitude.radius)}
+        kiteElevationDeg={Math.round(MathUtils.radToDeg(kiteAttitudeWithRadius.elevation))}
+        kiteAltitudeM={Math.round(Math.sin(kiteAttitudeWithRadius.elevation) * kiteAttitudeWithRadius.radius)}
       />
       <Canvas camera={CAMERA_CONFIG}>
         <ambientLight />
@@ -108,7 +100,7 @@ export default function App() {
         {displayParameters.showOcean ? (
           <Suspense fallback={null}>
             <Ocean />
-            {/* @ts-expect-error Sky props type mismatch with drei@9 types */}
+            {/* @ts-expect-error Sky scale prop not in types */}
             <Sky scale={1000} sunPosition={[2000, 350, -200]} turbidity={0.1} />
           </Suspense>
         ) : (
@@ -136,7 +128,7 @@ export default function App() {
         <Float rotationIntensity={0.2} floatIntensity={0.2} speed={1}>
           <Kite
             podPosition={POD_POSITION}
-            kiteAttitude={kiteAttitude}
+            kiteAttitude={kiteAttitudeWithRadius}
             kiteParameters={kiteParameters}
             windParameters={windParameters}
             scale={Math.sqrt(kiteParameters.surface_m2 / KITE_MODEL_SURFACE)}

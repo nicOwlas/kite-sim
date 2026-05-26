@@ -7,9 +7,9 @@ Title: Maersk Container Ship
 */
 
 import { useGLTF } from "@react-three/drei";
-import { GroupProps } from "@react-three/fiber";
+import { ThreeElements } from "@react-three/fiber";
 
-export default function Boat(props: GroupProps) {
+export default function Boat(props: ThreeElements["group"]) {
   const { nodes, materials } = useGLTF("/maersk_container_ship_light.glb") as any;
   return (
     <group {...props} dispose={null}>

@@ -4,7 +4,7 @@ License: https://help.3dexport.com/item/basic-and-extended-license-usage-example
 */
 
 import { useAnimations, useGLTF } from "@react-three/drei";
-import { forwardRef, useEffect } from "react";
+import { forwardRef, useEffect, useMemo } from "react";
 import { Group, Vector3 } from "three";
 import { MathUtils } from "three";
 const { degToRad } = MathUtils;
@@ -23,8 +23,10 @@ const Kite = forwardRef<Group, KiteProps>((props, ref) => {
   const { nodes, materials, animations } = useGLTF("/kiteV2.glb") as any;
   const { actions } = useAnimations(animations, ref as any);
 
-  const podPositionVector = new Vector3();
-  podPositionVector.fromArray(props.podPosition);
+  const podPositionVector = useMemo(
+    () => new Vector3().fromArray(props.podPosition),
+    [props.podPosition]
+  );
 
   const { radius, azimuth, elevation } = props.kiteAttitude;
   const position = new Vector3()
@@ -41,7 +43,7 @@ const Kite = forwardRef<Group, KiteProps>((props, ref) => {
       ref.current.rotation.z =
         degToRad(props.windParameters.direction_deg) + Math.PI / 2;
     }
-  }, [props.podPosition, props.kiteAttitude, props.windParameters.direction_deg]);
+  }, [podPositionVector, ref, props.kiteAttitude, props.windParameters.direction_deg]);
 
   return (
     <group position={position} ref={ref}>

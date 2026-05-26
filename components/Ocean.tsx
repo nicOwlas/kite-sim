@@ -1,4 +1,4 @@
-import { extend, useFrame, useLoader, useThree } from "@react-three/fiber";
+import { extend, useFrame, useLoader } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
 import { PlaneGeometry, RepeatWrapping, TextureLoader, Vector3 } from "three";
 import { Water } from "three-stdlib";
@@ -7,12 +7,12 @@ extend({ Water });
 
 export default function Ocean() {
   const ref = useRef<any>(null);
-  const gl = useThree((state) => state.gl);
-  const waterNormals = useLoader(TextureLoader, "/waternormals.jpeg");
+  const waterNormals = useLoader(TextureLoader as any, "/waternormals.jpeg");
 
+  // eslint-disable-next-line react-hooks/immutability
   waterNormals.wrapS = waterNormals.wrapT = RepeatWrapping;
-  const planeGeometry = new PlaneGeometry(10000, 10000);
-  const geom = useMemo(() => planeGeometry, []);
+
+  const geom = useMemo(() => new PlaneGeometry(10000, 10000), []);
   const config = useMemo(
     () => ({
       textureWidth: 512,
@@ -23,15 +23,14 @@ export default function Ocean() {
       waterColor: 0x001e0f,
       distortionScale: 3.7,
       fog: false,
-      format: (gl as any).encoding,
     }),
     [waterNormals]
   );
+
   useFrame((_state, delta) => {
     if (ref.current) {
       ref.current.material.uniforms.time.value += delta;
     }
   });
-  // @ts-expect-error Water is extended into R3F but has no JSX type
   return <water ref={ref} args={[geom, config]} rotation-x={-Math.PI / 2} />;
 }
