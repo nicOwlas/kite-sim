@@ -4,49 +4,19 @@ License: https://help.3dexport.com/item/basic-and-extended-license-usage-example
 */
 
 import { useAnimations, useGLTF } from "@react-three/drei";
-import { forwardRef, useEffect, useMemo } from "react";
-import { Group, Vector3 } from "three";
-import { MathUtils } from "three";
-const { degToRad } = MathUtils;
-import type { KiteAttitude, KiteParameters, WindParameters } from "@/utils/types";
+import { forwardRef } from "react";
+import { Group } from "three";
 
 interface KiteProps {
-  podPosition: number[];
-  kiteAttitude: KiteAttitude;
-  kiteParameters: KiteParameters;
-  windParameters: WindParameters;
   scale: number;
-  yaw: number;
 }
 
 const Kite = forwardRef<Group, KiteProps>((props, ref) => {
   const { nodes, materials, animations } = useGLTF("/kiteV2.glb") as any;
-  const { actions } = useAnimations(animations, ref as any);
-
-  const podPositionVector = useMemo(
-    () => new Vector3().fromArray(props.podPosition),
-    [props.podPosition]
-  );
-
-  const { radius, azimuth, elevation } = props.kiteAttitude;
-  const position = new Vector3()
-    .setFromSphericalCoords(
-      radius,
-      Math.PI / 2 - elevation,
-      -azimuth + Math.PI / 2
-    )
-    .add(podPositionVector);
-
-  useEffect(() => {
-    if (ref && "current" in ref && ref.current) {
-      ref.current.lookAt(podPositionVector);
-      ref.current.rotation.z =
-        degToRad(props.windParameters.direction_deg) + Math.PI / 2;
-    }
-  }, [podPositionVector, ref, props.kiteAttitude, props.windParameters.direction_deg]);
+  useAnimations(animations, ref as any);
 
   return (
-    <group position={position} ref={ref}>
+    <group ref={ref}>
       <group scale={props.scale} dispose={null}>
         <group name="kiteV2.glb" rotation={[-Math.PI / 2, 0, 0]}>
           <group
@@ -55,19 +25,97 @@ const Kite = forwardRef<Group, KiteProps>((props, ref) => {
             rotation={[0.787, 0.615, 0.227]}
           />
           <group name="Line" rotation={[1.629, 0.089, 1.84]}>
-            <mesh name="Line_1" castShadow receiveShadow geometry={nodes.Line_1.geometry} material={materials["8-_4-_lambert17SG"]} />
-            <mesh name="Line_2" castShadow receiveShadow geometry={nodes.Line_2.geometry} material={materials["9-_4-_lambert17SG"]} />
-            <mesh name="Line_3" castShadow receiveShadow geometry={nodes.Line_3.geometry} material={materials["12-_6-_lambert7SG"]} />
-            <mesh name="Line_4" castShadow receiveShadow geometry={nodes.Line_4.geometry} material={materials["13-_6-_lambert7SG"]} />
-            <mesh name="Line_5" castShadow receiveShadow geometry={nodes.Line_5.geometry} material={materials["10-_5-_lambert19SG"]} />
-            <mesh name="Line_6" castShadow receiveShadow geometry={nodes.Line_6.geometry} material={materials["11-_5-_lambert19SG"]} />
-            <mesh name="Line_7" castShadow receiveShadow geometry={nodes.Line_7.geometry} material={materials["6-_3-_initialShadingG"]} />
-            <mesh name="Line_8" castShadow receiveShadow geometry={nodes.Line_8.geometry} material={materials["7-_3-_initialShadingG"]} />
-            <mesh name="Line_9" castShadow receiveShadow geometry={nodes.Line_9.geometry} material={materials.Material} />
-            <mesh name="Line_10" castShadow receiveShadow geometry={nodes.Line_10.geometry} material={materials["Material.001"]} />
-            <mesh name="Line_11" castShadow receiveShadow geometry={nodes.Line_11.geometry} material={materials["0-_0-_VRayMtl4SG"]} />
-            <mesh name="Line_12" castShadow receiveShadow geometry={nodes.Line_12.geometry} material={materials["1-_0-_VRayMtl4SG"]} />
-            <mesh name="Line_13" castShadow receiveShadow geometry={nodes.Line_13.geometry} material={materials.equipment} />
+            <mesh
+              name="Line_1"
+              castShadow
+              receiveShadow
+              geometry={nodes.Line_1.geometry}
+              material={materials["8-_4-_lambert17SG"]}
+            />
+            <mesh
+              name="Line_2"
+              castShadow
+              receiveShadow
+              geometry={nodes.Line_2.geometry}
+              material={materials["9-_4-_lambert17SG"]}
+            />
+            <mesh
+              name="Line_3"
+              castShadow
+              receiveShadow
+              geometry={nodes.Line_3.geometry}
+              material={materials["12-_6-_lambert7SG"]}
+            />
+            <mesh
+              name="Line_4"
+              castShadow
+              receiveShadow
+              geometry={nodes.Line_4.geometry}
+              material={materials["13-_6-_lambert7SG"]}
+            />
+            <mesh
+              name="Line_5"
+              castShadow
+              receiveShadow
+              geometry={nodes.Line_5.geometry}
+              material={materials["10-_5-_lambert19SG"]}
+            />
+            <mesh
+              name="Line_6"
+              castShadow
+              receiveShadow
+              geometry={nodes.Line_6.geometry}
+              material={materials["11-_5-_lambert19SG"]}
+            />
+            <mesh
+              name="Line_7"
+              castShadow
+              receiveShadow
+              geometry={nodes.Line_7.geometry}
+              material={materials["6-_3-_initialShadingG"]}
+            />
+            <mesh
+              name="Line_8"
+              castShadow
+              receiveShadow
+              geometry={nodes.Line_8.geometry}
+              material={materials["7-_3-_initialShadingG"]}
+            />
+            <mesh
+              name="Line_9"
+              castShadow
+              receiveShadow
+              geometry={nodes.Line_9.geometry}
+              material={materials.Material}
+            />
+            <mesh
+              name="Line_10"
+              castShadow
+              receiveShadow
+              geometry={nodes.Line_10.geometry}
+              material={materials["Material.001"]}
+            />
+            <mesh
+              name="Line_11"
+              castShadow
+              receiveShadow
+              geometry={nodes.Line_11.geometry}
+              material={materials["0-_0-_VRayMtl4SG"]}
+            />
+            <mesh
+              name="Line_12"
+              castShadow
+              receiveShadow
+              geometry={nodes.Line_12.geometry}
+              material={materials["1-_0-_VRayMtl4SG"]}
+            />
+            <mesh
+              name="Line_13"
+              castShadow
+              receiveShadow
+              geometry={nodes.Line_13.geometry}
+              material={materials.equipment}
+            />
           </group>
           <group
             name="Texture_Group"

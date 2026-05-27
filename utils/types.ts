@@ -1,3 +1,5 @@
+import type { Vector3 } from "three";
+
 export interface KiteAttitude {
   radius: number;
   azimuth: number;
@@ -18,8 +20,15 @@ export interface WindParameters {
   direction_deg: number;
 }
 
+export interface KiteState {
+  position: Vector3;
+  velocity: Vector3;
+  traction: number;
+}
+
 export interface TractionInput {
-  kiteAttitude: KiteAttitude;
+  apparentWindSpeed: number;
+  tetherDirection: Vector3;
+  boatForward: Vector3;
   kiteParameters: KiteParameters;
-  windParameters: WindParameters;
 }

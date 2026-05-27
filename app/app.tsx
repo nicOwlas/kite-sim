@@ -6,16 +6,21 @@ import Kite from "@/components/Kite";
 import Ocean from "@/components/Ocean";
 import Pod from "@/components/Pod";
 import Tether from "@/components/Tether";
-import { CAMERA_CONFIG, KITE_MODEL_SURFACE, ORBIT_TARGET, POD_POSITION } from "@/utils/constants";
-import traction from "@/utils/traction";
+import {
+  CAMERA_CONFIG,
+  KITE_MODEL_SURFACE,
+  ORBIT_TARGET,
+  POD_POSITION,
+} from "@/utils/constants";
+import KiteFlight from "@/components/KiteFlight";
+import type { KiteFlightReadout } from "@/hooks/useKiteFlight";
 import { Float, OrbitControls, Sky, Stats } from "@react-three/drei";
-import { Canvas } from "@react-three/fiber";
+import { Canvas, ThreeEvent } from "@react-three/fiber";
 import { useControls } from "leva";
-import { Suspense, useMemo, useRef, useState } from "react";
-import { Group, Points, Spherical, Vector3 } from "three";
-import { MathUtils } from "three";
+import { Suspense, useRef, useState } from "react";
+import { Group, MathUtils, Points, Spherical, Vector3 } from "three";
+
 const { degToRad } = MathUtils;
-import type { KiteAttitude } from "@/utils/types";
 
 export default function App() {
   const kite = useRef<Group>(null);
@@ -29,69 +34,62 @@ export default function App() {
 
   const windParameters = useControls("Wind on deck", {
     speed_kt: { value: 20, min: 0, max: 50, step: 1 },
-    direction_deg: {
-      value: 0,
-      min: -180,
-      max: 180,
-      step: 1,
-    },
+    direction_deg: { value: 0, min: -180, max: 180, step: 1 },
+  });
+
+  const flightParameters = useControls("Flight", {
+    flying: true,
+    amplitude_az_deg: { value: 30, min: 0, max: 80, step: 1 },
+    amplitude_el_deg: { value: 10, min: 0, max: 40, step: 1 },
   });
 
   const displayParameters = useControls("Display", {
     showOcean: true,
   });
 
-  const [kiteAttitude, setKiteAttitude] = useState<KiteAttitude>({
-    radius: kiteParameters.length_m,
-    azimuth: degToRad(windParameters.direction_deg),
+  // Store center offset *relative to wind direction* so the loop tracks the wind.
+  const [centerOffset, setCenterOffset] = useState({
+    azimuthRelative: 0,
     elevation: Math.PI / 12,
-    roll: 0,
-    pitch: 0,
-    yaw: degToRad(windParameters.direction_deg),
   });
+  const windDirectionRad = degToRad(windParameters.direction_deg);
+  const center = {
+    azimuth: windDirectionRad + centerOffset.azimuthRelative,
+    elevation: centerOffset.elevation,
+  };
 
-  function handleClickedEnvelope(event: { intersections: { point: Vector3 }[] }) {
+  function handleClickedEnvelope(event: ThreeEvent<MouseEvent>) {
     if (event.intersections.length === 0) return;
     const point = event.intersections[0].point;
-    // Account that origin of envelop is at POD_POSITION
-    // Step 1: Translate point to new origin
-    const translatedPoint = new Vector3(
+    // Account that origin of envelope is at POD_POSITION
+    const translated = new Vector3(
       point.x - POD_POSITION[0],
       point.y - POD_POSITION[1],
-      point.z - POD_POSITION[2]
+      point.z - POD_POSITION[2],
     );
-
-    const intersectionSphericalCoordinates = new Spherical().setFromVector3(
-      translatedPoint
-    );
-
-    // Transform because THREE and World axis are not aligned
-    setKiteAttitude({
-      radius: intersectionSphericalCoordinates.radius,
-      azimuth: Math.PI / 2 - intersectionSphericalCoordinates.theta,
-      elevation: Math.PI / 2 - intersectionSphericalCoordinates.phi,
-      roll: 0,
-      pitch: 0,
-      yaw: degToRad(windParameters.direction_deg),
+    const sph = new Spherical().setFromVector3(translated);
+    const clickedAzimuth = Math.PI / 2 - sph.theta;
+    const clickedElevation = Math.PI / 2 - sph.phi;
+    setCenterOffset({
+      azimuthRelative: clickedAzimuth - windDirectionRad,
+      elevation: clickedElevation,
     });
   }
 
-  const kiteAttitudeWithRadius = useMemo(
-    () => ({ ...kiteAttitude, radius: kiteParameters.length_m }),
-    [kiteAttitude, kiteParameters.length_m]
-  );
-
-  const propulsiveForce = useMemo(
-    () => traction({ kiteAttitude: kiteAttitudeWithRadius, kiteParameters, windParameters }),
-    [kiteAttitudeWithRadius, kiteParameters, windParameters]
-  );
+  const [readout, setReadout] = useState<KiteFlightReadout>({
+    propulsiveForceInstant: 0,
+    propulsiveForceAvg: 0,
+    kiteElevationDeg: 0,
+    kiteAltitudeM: 0,
+  });
 
   return (
     <>
       <Dashboard
-        propulsiveForce={propulsiveForce}
-        kiteElevationDeg={Math.round(MathUtils.radToDeg(kiteAttitudeWithRadius.elevation))}
-        kiteAltitudeM={Math.round(Math.sin(kiteAttitudeWithRadius.elevation) * kiteAttitudeWithRadius.radius)}
+        propulsiveForceInstant={readout.propulsiveForceInstant}
+        propulsiveForceAvg={readout.propulsiveForceAvg}
+        kiteElevationDeg={readout.kiteElevationDeg}
+        kiteAltitudeM={readout.kiteAltitudeM}
       />
       <Canvas camera={CAMERA_CONFIG}>
         <ambientLight />
@@ -125,17 +123,22 @@ export default function App() {
           <Boat position={[0, -10, 0]} scale={5} />
         </Float>
 
-        <Float rotationIntensity={0.2} floatIntensity={0.2} speed={1}>
-          <Kite
-            podPosition={POD_POSITION}
-            kiteAttitude={kiteAttitudeWithRadius}
-            kiteParameters={kiteParameters}
-            windParameters={windParameters}
-            scale={Math.sqrt(kiteParameters.surface_m2 / KITE_MODEL_SURFACE)}
-            yaw={degToRad(windParameters.direction_deg)}
-            ref={kite}
-          />
-        </Float>
+        <Kite
+          ref={kite}
+          scale={Math.sqrt(kiteParameters.surface_m2 / KITE_MODEL_SURFACE)}
+        />
+        <KiteFlight
+          kiteRef={kite}
+          center={center}
+          amplitudes={{
+            azimuth: degToRad(flightParameters.amplitude_az_deg),
+            elevation: degToRad(flightParameters.amplitude_el_deg),
+          }}
+          kiteParameters={kiteParameters}
+          windParameters={windParameters}
+          flying={flightParameters.flying}
+          onReadout={setReadout}
+        />
         <Tether start={pod} end={kite} />
         <OrbitControls makeDefault target={new Vector3(...ORBIT_TARGET)} />
         {process.env.NODE_ENV === "development" && <Stats />}

@@ -1,29 +1,45 @@
 import { CSSProperties } from "react";
 
 interface DashboardProps {
-  propulsiveForce: number | null;
+  propulsiveForceInstant: number;
+  propulsiveForceAvg: number;
   kiteElevationDeg: number;
   kiteAltitudeM: number;
 }
 
-const element = (title: string, value: number | string) => {
-  const titleStyle: CSSProperties = { color: "#3b3b3b", textAlign: "center", fontSize: "0.85rem" };
-  const figureStyle: CSSProperties = {
-    color: "black",
-    textAlign: "center",
-    fontSize: "2rem",
-    padding: "2px",
-    margin: 0,
-  };
-  return (
-    <div style={{ marginBottom: "10px" }}>
-      <p style={{ ...titleStyle, margin: 0 }}>{title}</p>
-      <p style={figureStyle}>{value}</p>
-    </div>
-  );
+const titleStyle: CSSProperties = {
+  color: "#3b3b3b",
+  textAlign: "center",
+  fontSize: "0.85rem",
+  margin: 0,
+};
+const figureStyle: CSSProperties = {
+  color: "black",
+  textAlign: "center",
+  fontSize: "2rem",
+  padding: "2px",
+  margin: 0,
+};
+const subFigureStyle: CSSProperties = {
+  color: "#3b3b3b",
+  textAlign: "center",
+  fontSize: "1rem",
+  margin: 0,
 };
 
-const Dashboard = ({ propulsiveForce, kiteElevationDeg, kiteAltitudeM }: DashboardProps) => {
+const element = (title: string, value: number | string) => (
+  <div style={{ marginBottom: "10px" }}>
+    <p style={titleStyle}>{title}</p>
+    <p style={figureStyle}>{value}</p>
+  </div>
+);
+
+const Dashboard = ({
+  propulsiveForceInstant,
+  propulsiveForceAvg,
+  kiteElevationDeg,
+  kiteAltitudeM,
+}: DashboardProps) => {
   return (
     <div
       style={{
@@ -39,7 +55,11 @@ const Dashboard = ({ propulsiveForce, kiteElevationDeg, kiteAltitudeM }: Dashboa
         minWidth: "160px",
       }}
     >
-      {element("Propulsive Force", `${propulsiveForce ?? 0} N`)}
+      <div style={{ marginBottom: "10px" }}>
+        <p style={titleStyle}>Propulsive Force</p>
+        <p style={figureStyle}>{propulsiveForceInstant} N</p>
+        <p style={subFigureStyle}>avg 1 s: {propulsiveForceAvg} N</p>
+      </div>
       {element("Kite Elevation", `${kiteElevationDeg}°`)}
       {element("Kite Altitude", `${kiteAltitudeM} m`)}
     </div>
