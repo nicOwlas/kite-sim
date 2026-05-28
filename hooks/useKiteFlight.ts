@@ -13,13 +13,12 @@ import type { KiteParameters, WindParameters } from "@/utils/types";
 
 const DASHBOARD_HZ = 10;
 const DASHBOARD_INTERVAL_S = 1 / DASHBOARD_HZ;
-const AVERAGE_WINDOW_S = 1.0;
 const PHI_INITIAL = 0;
 const BOAT_FORWARD = new Vector3(1, 0, 0);
 
 export interface KiteFlightReadout {
   propulsiveForceInstant: number;
-  propulsiveForceAvg: number;
+  apparentWindMps: number;
   kiteElevationDeg: number;
   kiteAltitudeM: number;
 }
@@ -38,10 +37,6 @@ export function useKiteFlight(input: UseKiteFlightInput): void {
   const phiRef = useRef(PHI_INITIAL);
   const dashAccumRef = useRef(0);
   const podVec = useRef(new Vector3(...POD_POSITION));
-
-  // Ring buffer for rolling 1 s average of instantaneous force.
-  const bufferRef = useRef<{ value: number; t: number }[]>([]);
-  const elapsedRef = useRef(0);
 
   const tetherDirRef = useRef(new Vector3());
   const canopyAxisRef = useRef(new Vector3());
@@ -120,24 +115,13 @@ export function useKiteFlight(input: UseKiteFlightInput): void {
       kiteParameters: input.kiteParameters,
     });
 
-    // Rolling average
-    elapsedRef.current += dt;
-    const buffer = bufferRef.current;
-    buffer.push({ value: instant, t: elapsedRef.current });
-    const cutoff = elapsedRef.current - AVERAGE_WINDOW_S;
-    while (buffer.length > 0 && buffer[0].t < cutoff) buffer.shift();
-    const avg =
-      buffer.length === 0
-        ? 0
-        : buffer.reduce((s, x) => s + x.value, 0) / buffer.length;
-
     // Throttled dashboard update
     dashAccumRef.current += dt;
     if (dashAccumRef.current >= DASHBOARD_INTERVAL_S) {
       dashAccumRef.current = 0;
       onReadout({
         propulsiveForceInstant: Math.round(instant),
-        propulsiveForceAvg: Math.round(avg),
+        apparentWindMps: Math.round(sample.apparentWindSpeed * 10) / 10,
         kiteElevationDeg: Math.round(MathUtils.radToDeg(sample.elevation)),
         kiteAltitudeM: Math.round(sample.position.y),
       });

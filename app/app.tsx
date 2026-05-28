@@ -78,7 +78,7 @@ export default function App() {
 
   const [readout, setReadout] = useState<KiteFlightReadout>({
     propulsiveForceInstant: 0,
-    propulsiveForceAvg: 0,
+    apparentWindMps: 0,
     kiteElevationDeg: 0,
     kiteAltitudeM: 0,
   });
@@ -87,8 +87,7 @@ export default function App() {
     <>
       <Dashboard
         propulsiveForceInstant={readout.propulsiveForceInstant}
-        propulsiveForceAvg={readout.propulsiveForceAvg}
-        kiteElevationDeg={readout.kiteElevationDeg}
+        apparentWindMps={readout.apparentWindMps}
         kiteAltitudeM={readout.kiteAltitudeM}
       />
       <Canvas camera={CAMERA_CONFIG}>
