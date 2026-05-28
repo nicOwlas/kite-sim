@@ -86,24 +86,30 @@ export function useKiteFlight(input: UseKiteFlightInput): void {
     if (tetherLen < 1e-6) return;
     tetherDirection.multiplyScalar(1 / tetherLen);
 
-    // Orientation: build the basis directly instead of lookAt+Euler.z, which
-    // doesn't cleanly rotate about the tether axis and causes 180° flips as
-    // the kite moves around the wind-window sphere.
-    //
-    //   local +Y = tangent     → model's local +Y is the leading edge, so we
-    //                            aim it along motion
-    //   local +Z = -radialOut  → model's "canopy up" is local -Z, so we point
-    //                            -Z away from the pod; canopy surface stays
-    //                            ⊥ tether and right-side-up
-    //   local +X = +Y × +Z = tangent × (-radialOut)
-    //
-    // sample.tangent is unit length and ⊥ radialOut (both lie on the
-    // wind-sphere tangent plane), so this basis is orthonormal.
-    if (sample.tangent.lengthSq() >= 1e-12) {
-      const canopyAxis = canopyAxisRef.current.copy(tetherDirection).negate();
-      const xAxis = xAxisRef.current.crossVectors(sample.tangent, canopyAxis);
-      orientMatrixRef.current.makeBasis(xAxis, sample.tangent, canopyAxis);
-      group.quaternion.setFromRotationMatrix(orientMatrixRef.current);
+    if (input.flying) {
+      // Dynamic orientation: build the basis directly instead of
+      // lookAt+Euler.z, which doesn't cleanly rotate about the tether axis
+      // and causes 180° flips as the kite moves around the wind-window sphere.
+      //
+      //   local +Y = tangent     → model's leading edge, aimed along motion
+      //   local +Z = -radialOut  → canopy "up" points away from pod, so the
+      //                            canopy surface stays ⊥ tether & right-side-up
+      //   local +X = +Y × +Z
+      //
+      // sample.tangent is unit length and ⊥ radialOut, so the basis is
+      // orthonormal.
+      if (sample.tangent.lengthSq() >= 1e-12) {
+        const canopyAxis = canopyAxisRef.current.copy(tetherDirection).negate();
+        const xAxis = xAxisRef.current.crossVectors(sample.tangent, canopyAxis);
+        orientMatrixRef.current.makeBasis(xAxis, sample.tangent, canopyAxis);
+        group.quaternion.setFromRotationMatrix(orientMatrixRef.current);
+      }
+    } else {
+      // Static orientation: match the pre-dynamic-flight behavior so the
+      // parked kite "looks at the sky" at azimuth=windDirection.
+      group.lookAt(podVec.current);
+      group.rotation.z =
+        MathUtils.degToRad(input.windParameters.direction_deg) + Math.PI / 2;
     }
 
     // Traction
