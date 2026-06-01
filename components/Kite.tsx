@@ -4,36 +4,20 @@ License: https://help.3dexport.com/item/basic-and-extended-license-usage-example
 */
 
 import { useAnimations, useGLTF } from "@react-three/drei";
-import { forwardRef, useEffect } from "react";
-import { Vector3 } from "three";
-import { degToRad } from "three/src/math/MathUtils";
-const Kite = forwardRef((props, ref) => {
-  const { nodes, materials, animations } = useGLTF("/kiteV2.glb");
-  const { actions } = useAnimations(animations, ref);
+import { forwardRef } from "react";
+import { Group } from "three";
 
-  const podPositionVector = new Vector3();
-  podPositionVector.fromArray(props.podPosition);
+interface KiteProps {
+  scale: number;
+}
 
-  const { radius, azimuth, elevation } = props.kiteAttitude;
-  const position = new Vector3()
-    .setFromSphericalCoords(
-      radius,
-      Math.PI / 2 - elevation,
-      -azimuth + Math.PI / 2
-    )
-    .add(podPositionVector); // Origin of Spherical coordinates is at podPosition
-
-  useEffect(() => {
-    if (ref.current) {
-      ref.current.lookAt(podPositionVector);
-      ref.current.rotation.z =
-        degToRad(props.windParameters.direction_deg) + Math.PI / 2;
-    }
-  }, [props.podPosition]);
+const Kite = forwardRef<Group, KiteProps>((props, ref) => {
+  const { nodes, materials, animations } = useGLTF("/kiteV2.glb") as any;
+  useAnimations(animations, ref as any);
 
   return (
-    <group position={position} ref={ref}>
-      <group {...props} dispose={null}>
+    <group ref={ref}>
+      <group scale={props.scale} dispose={null}>
         <group name="kiteV2.glb" rotation={[-Math.PI / 2, 0, 0]}>
           <group
             name="Cat_Lowres"
