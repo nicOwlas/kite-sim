@@ -9,6 +9,7 @@ import {
 } from "@/utils/flightPath";
 import traction from "@/utils/traction";
 import { POD_POSITION } from "@/utils/constants";
+import { pushSample, type KiteTrailBuffer } from "@/utils/kiteTrail";
 import type { KiteParameters, WindParameters } from "@/utils/types";
 
 const DASHBOARD_HZ = 10;
@@ -31,6 +32,8 @@ interface UseKiteFlightInput {
   windParameters: WindParameters;
   flying: boolean;
   onReadout: (r: KiteFlightReadout) => void;
+  trailBufferRef?: RefObject<KiteTrailBuffer | null>;
+  globalPhaseRef?: RefObject<number>;
 }
 
 export function useKiteFlight(input: UseKiteFlightInput): void {
@@ -67,11 +70,22 @@ export function useKiteFlight(input: UseKiteFlightInput): void {
       flying: input.flying,
     });
 
-    // Advance φ
-    phiRef.current = (phiRef.current + sample.dPhiDt * dt) % (2 * Math.PI);
+    // Advance φ (wrapped) and the monotonic global phase (never resets).
+    const dPhi = sample.dPhiDt * dt;
+    phiRef.current = (phiRef.current + dPhi) % (2 * Math.PI);
+    const globalPhaseRef = input.globalPhaseRef;
+    if (globalPhaseRef) {
+      globalPhaseRef.current = globalPhaseRef.current + dPhi;
+    }
 
     // Position
     group.position.copy(sample.position);
+
+    // Trail capture (after position is finalized for this frame).
+    const trailBuffer = input.trailBufferRef?.current;
+    if (trailBuffer && globalPhaseRef) {
+      pushSample(trailBuffer, sample.position, globalPhaseRef.current);
+    }
 
     // Tether direction (radialOut: from pod to kite, unit length).
     const tetherDirection = tetherDirRef.current
