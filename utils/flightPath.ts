@@ -1,6 +1,5 @@
 import { MathUtils, Vector3 } from "three";
 import {
-  KNOTS_TO_MS,
   MIN_KITE_HEIGHT,
   POD_POSITION,
   REFERENCE_HEIGHT,
@@ -79,7 +78,7 @@ export function sampleFlightPath(input: FlightInput): FlightSample {
   const L = kiteParameters.length_m;
   const LD = Math.max(kiteParameters.liftToDrag, 0.0001);
   const windDirection = degToRad(windParameters.direction_deg);
-  const windSpeedDeck = windParameters.speed_kt * KNOTS_TO_MS;
+  const windSpeedDeck = windParameters.speed_mps;
 
   const { azimuth: A, elevation: B } = clampAmplitudes(
     center,

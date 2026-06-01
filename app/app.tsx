@@ -36,13 +36,13 @@ export default function App() {
   const pulseRef = useRef<CenterPulseEvent | null>(null);
 
   const kiteParameters = useControls("Kite", {
-    length_m: { value: 150, min: 0, max: 400, step: 1 },
-    surface_m2: { value: 400, min: 8, max: 1600, step: 1 },
+    length_m: { value: 300, min: 0, max: 400, step: 1 },
+    surface_m2: { value: 1000, min: 8, max: 1600, step: 1 },
     liftToDrag: { value: 6, min: 4, max: 10, step: 1 },
   });
 
   const windParameters = useControls("Wind on deck", {
-    speed_kt: { value: 20, min: 0, max: 50, step: 1 },
+    speed_mps: { value: 5, min: 0, max: 25, step: 0.5 },
     direction_deg: { value: 0, min: -180, max: 180, step: 1 },
   });
 

@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 import { Vector3 } from "three";
 import traction from "./traction";
 import {
-  KNOTS_TO_MS,
   MIN_KITE_HEIGHT,
   REFERENCE_HEIGHT,
   WIND_GRADIENT_EXPONENT,
@@ -18,7 +17,7 @@ type LegacyProps = {
     yaw: number;
   };
   kiteParameters: { length_m: number; surface_m2: number; liftToDrag: number };
-  windParameters: { speed_kt: number; direction_deg: number };
+  windParameters: { speed_mps: number; direction_deg: number };
 };
 
 function makeLegacy(overrides: Partial<LegacyProps> = {}): LegacyProps {
@@ -37,7 +36,7 @@ function makeLegacy(overrides: Partial<LegacyProps> = {}): LegacyProps {
       liftToDrag: 6,
     },
     windParameters: {
-      speed_kt: 20,
+      speed_mps: 10,
       direction_deg: 0,
     },
   };
@@ -59,7 +58,7 @@ function makeLegacy(overrides: Partial<LegacyProps> = {}): LegacyProps {
 /** Build the new traction signature from a legacy static (v_kite = 0) scenario. */
 function staticProps(legacy: LegacyProps) {
   const { radius, azimuth, elevation } = legacy.kiteAttitude;
-  const windSpeed = legacy.windParameters.speed_kt * KNOTS_TO_MS;
+  const windSpeed = legacy.windParameters.speed_mps;
   const kiteHeight = Math.sin(elevation) * radius + MIN_KITE_HEIGHT;
   const windScale = (kiteHeight / REFERENCE_HEIGHT) ** WIND_GRADIENT_EXPONENT;
   const apparentWindSpeed = windSpeed * windScale;
@@ -92,16 +91,16 @@ describe("traction (static, v_kite = 0)", () => {
 
   it("returns zero force when wind speed is zero", () => {
     expect(
-      tractionStatic({ windParameters: { speed_kt: 0, direction_deg: 0 } }),
+      tractionStatic({ windParameters: { speed_mps: 0, direction_deg: 0 } }),
     ).toBe(0);
   });
 
   it("increases force with higher wind speed", () => {
     const low = tractionStatic({
-      windParameters: { speed_kt: 10, direction_deg: 0 },
+      windParameters: { speed_mps: 5, direction_deg: 0 },
     });
     const high = tractionStatic({
-      windParameters: { speed_kt: 30, direction_deg: 0 },
+      windParameters: { speed_mps: 15, direction_deg: 0 },
     });
     expect(high).toBeGreaterThan(low);
   });
@@ -164,17 +163,17 @@ describe("traction (static, v_kite = 0)", () => {
     // With v_kite = 0, only wind speed (not direction) drives apparent wind magnitude.
     const aligned = tractionStatic();
     const opposite = tractionStatic({
-      windParameters: { speed_kt: 20, direction_deg: 180 },
+      windParameters: { speed_mps: 10, direction_deg: 180 },
     });
     expect(opposite).toBe(aligned);
   });
 
   it("scales quadratically with apparent wind speed", () => {
     const base = tractionStatic({
-      windParameters: { speed_kt: 10, direction_deg: 0 },
+      windParameters: { speed_mps: 5, direction_deg: 0 },
     });
     const doubled = tractionStatic({
-      windParameters: { speed_kt: 20, direction_deg: 0 },
+      windParameters: { speed_mps: 10, direction_deg: 0 },
     });
     const ratio = doubled / base;
     expect(ratio).toBeGreaterThan(3.5);

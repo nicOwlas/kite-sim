@@ -1,5 +1,4 @@
 // Physics constants
-export const KNOTS_TO_MS = 0.514;
 export const LIFT_COEFFICIENT = 0.776; // LELOUP2013
 export const AIR_DENSITY = 1.225; // kg/m³ at sea level, 15°C
 export const WIND_GRADIENT_EXPONENT = 1 / 7; // ITTC 2011
