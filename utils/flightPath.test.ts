@@ -13,7 +13,7 @@ const kiteParameters: KiteParameters = {
 };
 
 const windParameters: WindParameters = {
-  speed_kt: 20,
+  speed_mps: 20,
   direction_deg: 0,
 };
 
@@ -79,7 +79,7 @@ describe("sampleFlightPath", () => {
     const s = sampleFlightPath({
       ...defaults,
       phi: 0.3,
-      windParameters: { speed_kt: 0, direction_deg: 0 },
+      windParameters: { speed_mps: 0, direction_deg: 0 },
     });
     expect(s.speed).toBe(0);
     expect(s.apparentWindSpeed).toBe(0);
@@ -90,13 +90,13 @@ describe("sampleFlightPath", () => {
       ...defaults,
       phi: 0,
       center: { azimuth: 0, elevation: degToRad(20) },
-      windParameters: { speed_kt: 20, direction_deg: 0 },
+      windParameters: { speed_mps: 20, direction_deg: 0 },
     });
     const sideWind = sampleFlightPath({
       ...defaults,
       phi: 0,
       center: { azimuth: degToRad(90), elevation: degToRad(20) },
-      windParameters: { speed_kt: 20, direction_deg: 90 },
+      windParameters: { speed_mps: 20, direction_deg: 90 },
     });
     // Same relative geometry, rotated 90° in world coords around the pod:
     // the east-wind kite's downwind offset (+X from pod) should match the

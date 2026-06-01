@@ -16,7 +16,7 @@ export interface KiteParameters {
 }
 
 export interface WindParameters {
-  speed_kt: number;
+  speed_mps: number;
   direction_deg: number;
 }
 

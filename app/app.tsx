@@ -1,8 +1,10 @@
 "use client";
 import Boat from "@/components/Boat";
+import CenterPulse, { type CenterPulseEvent } from "@/components/CenterPulse";
 import Dashboard from "@/components/Dashboard";
 import FlightEnvelope from "@/components/FlightEnvelope";
 import Kite from "@/components/Kite";
+import KiteTrail from "@/components/KiteTrail";
 import Ocean from "@/components/Ocean";
 import Pod from "@/components/Pod";
 import Tether from "@/components/Tether";
@@ -14,6 +16,7 @@ import {
 } from "@/utils/constants";
 import KiteFlight from "@/components/KiteFlight";
 import type { KiteFlightReadout } from "@/hooks/useKiteFlight";
+import { createTrailBuffer, type KiteTrailBuffer } from "@/utils/kiteTrail";
 import { Float, OrbitControls, Sky, Stats } from "@react-three/drei";
 import { Canvas, ThreeEvent } from "@react-three/fiber";
 import { useControls } from "leva";
@@ -25,15 +28,21 @@ const { degToRad } = MathUtils;
 export default function App() {
   const kite = useRef<Group>(null);
   const pod = useRef<Points>(null);
+  const trailBufferRef = useRef<KiteTrailBuffer | null>(null);
+  if (trailBufferRef.current === null) {
+    trailBufferRef.current = createTrailBuffer();
+  }
+  const globalPhaseRef = useRef(0);
+  const pulseRef = useRef<CenterPulseEvent | null>(null);
 
   const kiteParameters = useControls("Kite", {
-    length_m: { value: 150, min: 0, max: 400, step: 1 },
-    surface_m2: { value: 400, min: 8, max: 1600, step: 1 },
+    length_m: { value: 300, min: 0, max: 400, step: 1 },
+    surface_m2: { value: 1000, min: 8, max: 1600, step: 1 },
     liftToDrag: { value: 6, min: 4, max: 10, step: 1 },
   });
 
   const windParameters = useControls("Wind on deck", {
-    speed_kt: { value: 20, min: 0, max: 50, step: 1 },
+    speed_mps: { value: 5, min: 0, max: 25, step: 0.5 },
     direction_deg: { value: 0, min: -180, max: 180, step: 1 },
   });
 
@@ -74,6 +83,11 @@ export default function App() {
       azimuthRelative: clickedAzimuth - windDirectionRad,
       elevation: clickedElevation,
     });
+    pulseRef.current = {
+      point: point.clone(),
+      normal: translated.clone().normalize(),
+      startMs: performance.now(),
+    };
   }
 
   const [readout, setReadout] = useState<KiteFlightReadout>({
@@ -137,7 +151,14 @@ export default function App() {
           windParameters={windParameters}
           flying={flightParameters.flying}
           onReadout={setReadout}
+          trailBufferRef={trailBufferRef}
+          globalPhaseRef={globalPhaseRef}
         />
+        <KiteTrail
+          trailBufferRef={trailBufferRef}
+          globalPhaseRef={globalPhaseRef}
+        />
+        <CenterPulse pulseRef={pulseRef} />
         <Tether start={pod} end={kite} />
         <OrbitControls makeDefault target={new Vector3(...ORBIT_TARGET)} />
         {process.env.NODE_ENV === "development" && <Stats />}
