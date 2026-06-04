@@ -16,6 +16,7 @@ interface KiteFlightProps {
   onReadout: (r: KiteFlightReadout) => void;
   trailBufferRef?: RefObject<KiteTrailBuffer | null>;
   globalPhaseRef?: RefObject<number>;
+  sagRef?: RefObject<number>;
 }
 
 /** Lives inside <Canvas> so useFrame can run. Drives the kite ref each frame. */

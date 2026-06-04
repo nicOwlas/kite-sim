@@ -13,6 +13,7 @@ export interface KiteParameters {
   length_m: number;
   surface_m2: number;
   liftToDrag: number;
+  tetherWeight_kgpm: number;
 }
 
 export interface WindParameters {

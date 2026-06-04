@@ -34,11 +34,13 @@ export default function App() {
   }
   const globalPhaseRef = useRef(0);
   const pulseRef = useRef<CenterPulseEvent | null>(null);
+  const sagRef = useRef(0);
 
   const kiteParameters = useControls("Kite", {
     length_m: { value: 300, min: 0, max: 400, step: 1 },
     surface_m2: { value: 1000, min: 8, max: 1600, step: 1 },
     liftToDrag: { value: 6, min: 4, max: 10, step: 1 },
+    tetherWeight_kgpm: { value: 1.5, min: 0, max: 20, step: 0.1 },
   });
 
   const windParameters = useControls("Wind on deck", {
@@ -153,13 +155,14 @@ export default function App() {
           onReadout={setReadout}
           trailBufferRef={trailBufferRef}
           globalPhaseRef={globalPhaseRef}
+          sagRef={sagRef}
         />
         <KiteTrail
           trailBufferRef={trailBufferRef}
           globalPhaseRef={globalPhaseRef}
         />
         <CenterPulse pulseRef={pulseRef} />
-        <Tether start={pod} end={kite} />
+        <Tether start={pod} end={kite} sagRef={sagRef} />
         <OrbitControls makeDefault target={new Vector3(...ORBIT_TARGET)} />
         {process.env.NODE_ENV === "development" && <Stats />}
       </Canvas>

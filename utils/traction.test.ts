@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { Vector3 } from "three";
-import traction from "./traction";
+import traction, { tetherTension } from "./traction";
 import {
   MIN_KITE_HEIGHT,
   REFERENCE_HEIGHT,
@@ -16,7 +16,12 @@ type LegacyProps = {
     pitch: number;
     yaw: number;
   };
-  kiteParameters: { length_m: number; surface_m2: number; liftToDrag: number };
+  kiteParameters: {
+    length_m: number;
+    surface_m2: number;
+    liftToDrag: number;
+    tetherWeight_kgpm: number;
+  };
   windParameters: { speed_mps: number; direction_deg: number };
 };
 
@@ -34,6 +39,7 @@ function makeLegacy(overrides: Partial<LegacyProps> = {}): LegacyProps {
       length_m: 150,
       surface_m2: 400,
       liftToDrag: 6,
+      tetherWeight_kgpm: 1.5,
     },
     windParameters: {
       speed_mps: 10,
@@ -107,10 +113,20 @@ describe("traction (static, v_kite = 0)", () => {
 
   it("increases force with larger kite surface", () => {
     const small = tractionStatic({
-      kiteParameters: { length_m: 150, surface_m2: 100, liftToDrag: 6 },
+      kiteParameters: {
+        length_m: 150,
+        surface_m2: 100,
+        liftToDrag: 6,
+        tetherWeight_kgpm: 1.5,
+      },
     });
     const large = tractionStatic({
-      kiteParameters: { length_m: 150, surface_m2: 800, liftToDrag: 6 },
+      kiteParameters: {
+        length_m: 150,
+        surface_m2: 800,
+        liftToDrag: 6,
+        tetherWeight_kgpm: 1.5,
+      },
     });
     expect(large).toBeGreaterThan(small);
   });
@@ -181,6 +197,47 @@ describe("traction (static, v_kite = 0)", () => {
   });
 });
 
+describe("tetherTension (line-tension magnitude)", () => {
+  const params = {
+    length_m: 150,
+    surface_m2: 400,
+    liftToDrag: 6,
+    tetherWeight_kgpm: 1.5,
+  };
+
+  it("is positive for non-zero wind", () => {
+    expect(tetherTension(10, params)).toBeGreaterThan(0);
+  });
+
+  it("is zero when apparent wind is zero", () => {
+    expect(tetherTension(0, params)).toBe(0);
+  });
+
+  it("scales quadratically with apparent wind speed", () => {
+    const ratio = tetherTension(10, params) / tetherTension(5, params);
+    expect(ratio).toBeCloseTo(4, 5);
+  });
+
+  it("equals the unprojected force traction() projects onto boat forward", () => {
+    // tetherDirection aligned with boatForward → projection = 1, so the rounded
+    // traction equals the rounded tension magnitude.
+    const aligned = new Vector3(1, 0, 0);
+    const projected = traction({
+      apparentWindSpeed: 12,
+      tetherDirection: aligned,
+      boatForward: aligned,
+      kiteParameters: params,
+    });
+    expect(projected).toBe(Math.round(tetherTension(12, params)));
+  });
+
+  it("is independent of tether weight (weight only affects sag, not tension)", () => {
+    const light = tetherTension(10, { ...params, tetherWeight_kgpm: 0 });
+    const heavy = tetherTension(10, { ...params, tetherWeight_kgpm: 20 });
+    expect(heavy).toBe(light);
+  });
+});
+
 describe("Loyd cross-wind amplification", () => {
   it("traction at v_kite = V_wind · (L/D) perpendicular to wind is ~(L/D)² × static", () => {
     const LD = 6;
@@ -190,6 +247,7 @@ describe("Loyd cross-wind amplification", () => {
       length_m: 150,
       surface_m2: surface,
       liftToDrag: LD,
+      tetherWeight_kgpm: 1.5,
     };
 
     // Static: kite at center of wind window, tether along boat forward, v_kite = 0

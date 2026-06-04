@@ -7,8 +7,13 @@ import {
   type FlightCenter,
   type FlightAmplitudes,
 } from "@/utils/flightPath";
-import traction from "@/utils/traction";
-import { POD_POSITION } from "@/utils/constants";
+import traction, { tetherTension } from "@/utils/traction";
+import { tetherSag } from "@/utils/tetherSag";
+import {
+  CATENARY_MAX_SAG_FRACTION,
+  GRAVITY,
+  POD_POSITION,
+} from "@/utils/constants";
 import { pushSample, type KiteTrailBuffer } from "@/utils/kiteTrail";
 import type { KiteParameters, WindParameters } from "@/utils/types";
 
@@ -34,6 +39,8 @@ interface UseKiteFlightInput {
   onReadout: (r: KiteFlightReadout) => void;
   trailBufferRef?: RefObject<KiteTrailBuffer | null>;
   globalPhaseRef?: RefObject<number>;
+  /** Written each frame with the tether's midspan sag (m) for the renderer. */
+  sagRef?: RefObject<number>;
 }
 
 export function useKiteFlight(input: UseKiteFlightInput): void {
@@ -92,7 +99,13 @@ export function useKiteFlight(input: UseKiteFlightInput): void {
       .copy(sample.position)
       .sub(podVec.current);
     const tetherLen = tetherDirection.length();
-    if (tetherLen < 1e-6) return;
+    const sagRef = input.sagRef;
+    if (tetherLen < 1e-6) {
+      if (sagRef) sagRef.current = 0;
+      return;
+    }
+    // Horizontal span (√(dx² + dz²)) — capture before normalizing in place.
+    const horizontalSpan = Math.hypot(tetherDirection.x, tetherDirection.z);
     tetherDirection.multiplyScalar(1 / tetherLen);
 
     if (input.flying) {
@@ -119,6 +132,22 @@ export function useKiteFlight(input: UseKiteFlightInput): void {
       group.lookAt(podVec.current);
       group.rotation.z =
         MathUtils.degToRad(input.windParameters.direction_deg) + Math.PI / 2;
+    }
+
+    // Tether catenary sag (visual): bow the line below the chord under its own
+    // weight, scaled by the line tension. High pull → taut; parked → clamped droop.
+    if (sagRef) {
+      const tension = tetherTension(
+        sample.apparentWindSpeed,
+        input.kiteParameters,
+      );
+      sagRef.current = tetherSag({
+        tension_N: tension,
+        weightPerMeter_Npm: input.kiteParameters.tetherWeight_kgpm * GRAVITY,
+        horizontalSpan_m: horizontalSpan,
+        chordLength_m: tetherLen,
+        maxSagFraction: CATENARY_MAX_SAG_FRACTION,
+      });
     }
 
     // Traction

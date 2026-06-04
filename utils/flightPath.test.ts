@@ -10,6 +10,7 @@ const kiteParameters: KiteParameters = {
   length_m: 150,
   surface_m2: 400,
   liftToDrag: 6,
+  tetherWeight_kgpm: 1.5,
 };
 
 const windParameters: WindParameters = {
